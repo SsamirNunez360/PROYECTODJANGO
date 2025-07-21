@@ -1,0 +1,6 @@
+pip>=25
+Django>=5.2
+djangorestframework>=3.16
+pillow>=11.3
+numpy>=2.3
+pandas>=2.3.1
