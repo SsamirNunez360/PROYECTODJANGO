@@ -5,5 +5,6 @@ class Tutoria:
     
 class Estudiante:
     
-    def __init__(self, nombre, edad, id_estudiante):
-        pass
+    def __init__(self, nombre, id_estudiante):
+        self.nombre = nombre
+        self.id_estudiante = id_estudiante
