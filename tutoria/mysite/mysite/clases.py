@@ -106,6 +106,10 @@ class TutorIAConnectPro:
         estudiante = Estudiante(id_estudiante, nombre, carrera)
         self.estudiantes[id_estudiante] = estudiante
         self.lista_estudiantes.append(estudiante)
+        
+    def registrar_tutor(self, id_tutor, nombre, materias, calificaciones):
+        tutor = Tutor(id_tutor, nombre, materias, calificaciones)
+        self.lista_tutores.append(tutor)
 
     def guardar_datos(self, archivo='datos.json'):
         data = {
