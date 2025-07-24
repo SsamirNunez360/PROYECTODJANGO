@@ -1,165 +1,159 @@
-# ESTRUCTURAS DE DATOS PERSONALIZADAS
-
-class Nodo:
-    # Nodo para listas enlazadas.
-    def __init__(self, dato):
-        self.dato = dato
-        self.siguiente = None
-
-
-class ListaEnlazada:
-    # Lista enlazada simple, usada para almacenar historiales de sesiones.
-    def __init__(self):
-        self.primero = None
-
-    def agregar_al_final(self, dato):
-        nuevo = Nodo(dato)
-        if not self.primero:
-            self.primero = nuevo
-        else:
-            actual = self.primero
-            while actual.siguiente:
-                actual = actual.siguiente
-            actual.siguiente = nuevo
-
-    def __iter__(self):
-        actual = self.primero
-        while actual:
-            yield actual.dato
-            actual = actual.siguiente
-
-    def mostrar_historial(self):
-        return [str(dato) for dato in self]
-
-
-class Cola:
-    # Cola simple FIFO para manejar solicitudes de tutoría.
-    def __init__(self):
-        self.items = []
-
-    def encolar(self, item):
-        self.items.append(item)
-
-    def desencolar(self):
-        if not self.esta_vacia():
-            return self.items.pop(0)
-
-    def esta_vacia(self):
-        return len(self.items) == 0
-
-    def tamano(self):
-        return len(self.items)
-
-    def ver_primero(self):
-        if not self.esta_vacia():
-            return self.items[0]
-
-
-# CLASES DE ENTIDADES BASE
+import json
 
 class Usuario:
-    # Representa un usuario genérico del sistema.
     def __init__(self, id_usuario, nombre):
         self.id_usuario = id_usuario
         self.nombre = nombre
-        self.historial_sesiones = ListaEnlazada()
-
-    def __str__(self):
-        return f"{self.nombre} (ID: {self.id_usuario})"
-
 
 class Estudiante(Usuario):
-    # Representa un estudiante, hereda de Usuario.
     def __init__(self, id_usuario, nombre, carrera):
         super().__init__(id_usuario, nombre)
         self.carrera = carrera
+        self.historial_sesiones = []
 
+    def to_dict(self):
+        return {
+            'id_usuario': self.id_usuario,
+            'nombre': self.nombre,
+            'carrera': self.carrera,
+            'historial_sesiones': [s.id_sesion for s in self.historial_sesiones]
+        }
+
+    @staticmethod
+    def from_dict(data):
+        return Estudiante(data['id_usuario'], data['nombre'], data['carrera'])
 
 class Tutor(Usuario):
-    # Representa un tutor, hereda de Usuario.
-    def __init__(self, id_usuario, nombre, especialidad, calificaciones_por_materia):
+    def __init__(self, id_usuario, nombre, materias, calificaciones):
         super().__init__(id_usuario, nombre)
-        self.especialidad = especialidad  # Lista de materias
-        self.calificaciones_por_materia = calificaciones_por_materia  # Dict con notas por materia
-        self.disponibilidad = {}  # Dict {'2025-07-23 10:00': 'disponible' / 'ocupado'}
+        self.materias = materias
+        self.calificaciones = calificaciones
+        self.disponibilidad = {m: True for m in materias}
+        self.historial_sesiones = []
 
-    @property
-    def calificacion_promedio_general(self):
-        # Calcula el promedio general de todas las calificaciones.
-        if not self.calificaciones_por_materia:
-            return 0
-        return sum(self.calificaciones_por_materia.values()) / len(self.calificaciones_por_materia)
+    def to_dict(self):
+        return {
+            'id_usuario': self.id_usuario,
+            'nombre': self.nombre,
+            'materias': self.materias,
+            'calificaciones': self.calificaciones,
+            'disponibilidad': self.disponibilidad,
+            'historial_sesiones': [s.id_sesion for s in self.historial_sesiones]
+        }
 
-
-class SolicitudTutoria:
-    # Representa una solicitud de tutoría.
-    def __init__(self, id_solicitud, id_estudiante, materia, fecha_preferida, hora_preferida):
-        self.id_solicitud = id_solicitud
-        self.id_estudiante = id_estudiante
-        self.materia = materia
-        self.fecha_preferida = fecha_preferida
-        self.hora_preferida = hora_preferida
-        self.estado = "pendiente"  # otros posibles: 'asignada', 'rechazada'
-
+    @staticmethod
+    def from_dict(data):
+        tutor = Tutor(data['id_usuario'], data['nombre'], data['materias'], data['calificaciones'])
+        tutor.disponibilidad = data.get('disponibilidad', {m: True for m in data['materias']})
+        return tutor
 
 class SesionTutoria:
-    # Representa una sesión de tutoría ya asignada.
-    def __init__(self, id_sesion, id_estudiante, id_tutor, materia, fecha, hora, duracion, estado):
+    def __init__(self, id_sesion, id_solicitud, id_estudiante, id_tutor, materia):
         self.id_sesion = id_sesion
+        self.id_solicitud = id_solicitud
         self.id_estudiante = id_estudiante
         self.id_tutor = id_tutor
         self.materia = materia
-        self.fecha = fecha
-        self.hora = hora
-        self.duracion = duracion  # en minutos
-        self.estado = estado  # 'programada', 'completada', etc.
 
-    def __str__(self):
-        return f"Sesión {self.id_sesion}: {self.materia} con Tutor {self.id_tutor} el {self.fecha} a las {self.hora}"
+    def to_dict(self):
+        return {
+            'id_sesion': self.id_sesion,
+            'id_solicitud': self.id_solicitud,
+            'id_estudiante': self.id_estudiante,
+            'id_tutor': self.id_tutor,
+            'materia': self.materia
+        }
 
+    @staticmethod
+    def from_dict(data):
+        return SesionTutoria(
+            data['id_sesion'],
+            data['id_solicitud'],
+            data['id_estudiante'],
+            data['id_tutor'],
+            data['materia']
+        )
 
-# ÁRBOL BINARIO DE BÚSQUEDA
+class ListaEnlazada:
+    def __init__(self):
+        self.lista = []
 
-class NodoBST:
-    # Nodo del Árbol Binario de Búsqueda que contiene un objeto Tutor.
-    def __init__(self, tutor):
-        self.tutor = tutor
-        self.izquierda = None
-        self.derecha = None
+    def agregar_al_final(self, elemento):
+        self.lista.append(elemento)
 
+    def obtener_todos(self):
+        return self.lista
 
 class ArbolBinarioBusqueda:
-    # Árbol Binario de Búsqueda basado en la calificación promedio general del tutor.
     def __init__(self):
-        self.raiz = None
+        self.elementos = []
 
     def insertar(self, tutor):
-        # Inserta un tutor en el árbol basado en su calificación promedio general.
-        if self.raiz is None:
-            self.raiz = NodoBST(tutor)
-        else:
-            self._insertar_recursivo(self.raiz, tutor)
+        self.elementos.append(tutor)
 
-    def _insertar_recursivo(self, nodo, tutor):
-        if tutor.calificacion_promedio_general < nodo.tutor.calificacion_promedio_general:
-            if nodo.izquierda is None:
-                nodo.izquierda = NodoBST(tutor)
-            else:
-                self._insertar_recursivo(nodo.izquierda, tutor)
-        else:
-            if nodo.derecha is None:
-                nodo.derecha = NodoBST(tutor)
-            else:
-                self._insertar_recursivo(nodo.derecha, tutor)
+class TutorIAConnectPro:
+    def __init__(self):
+        self.estudiantes = {}
+        self.tutores = {}
+        self.lista_estudiantes = []
+        self.lista_tutores = []
+        self.arbol_tutores = ArbolBinarioBusqueda()
+        self.historial_global_sesiones = ListaEnlazada()
+        self.next_solicitud_id = 1
+        self.next_sesion_id = 1
+        
+    def registrar_estudiante(self, id_estudiante, nombre, carrera):
+        estudiante = Estudiante(id_estudiante, nombre, carrera)
+        self.estudiantes[id_estudiante] = estudiante
+        self.lista_estudiantes.append(estudiante)
 
-    def obtener_tutores_ordenados(self):
-        # Devuelve una lista de tutores ordenados de mayor a menor por calificación.
-        resultado = []
-        self._inorden_inverso(self.raiz, resultado)
-        return resultado
+    def guardar_datos(self, archivo='datos.json'):
+        data = {
+            'estudiantes': [e.to_dict() for e in self.lista_estudiantes],
+            'tutores': [t.to_dict() for t in self.lista_tutores],
+            'sesiones': [s.to_dict() for s in self.historial_global_sesiones.obtener_todos()],
+            'next_solicitud_id': self.next_solicitud_id,
+            'next_sesion_id': self.next_sesion_id
+        }
+        with open(archivo, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4)
 
-    def _inorden_inverso(self, nodo, resultado):
-        if nodo is not None:
-            self._inorden_inverso(nodo.derecha, resultado)
-            resultado.append(nodo.tutor)
-            self._inorden_inverso(nodo.izquierda, resultado)
+    def cargar_datos(self, archivo='datos.json'):
+        try:
+            with open(archivo, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            self.estudiantes = {}
+            self.lista_estudiantes = []
+            for est_data in data['estudiantes']:
+                est = Estudiante.from_dict(est_data)
+                self.estudiantes[est.id_usuario] = est
+                self.lista_estudiantes.append(est)
+
+            self.tutores = {}
+            self.lista_tutores = []
+            self.arbol_tutores = ArbolBinarioBusqueda()
+            for tut_data in data['tutores']:
+                tut = Tutor.from_dict(tut_data)
+                self.tutores[tut.id_usuario] = tut
+                self.lista_tutores.append(tut)
+                self.arbol_tutores.insertar(tut)
+
+            self.historial_global_sesiones = ListaEnlazada()
+            sesiones_dict = {}
+            for ses_data in data['sesiones']:
+                sesion = SesionTutoria.from_dict(ses_data)
+                sesiones_dict[sesion.id_sesion] = sesion
+                self.historial_global_sesiones.agregar_al_final(sesion)
+
+            for est in self.lista_estudiantes:
+                est.historial_sesiones = [sesiones_dict[sid] for sid in est.to_dict()['historial_sesiones'] if sid in sesiones_dict]
+
+            for tut in self.lista_tutores:
+                tut.historial_sesiones = [sesiones_dict[sid] for sid in tut.to_dict()['historial_sesiones'] if sid in sesiones_dict]
+
+            self.next_solicitud_id = data.get('next_solicitud_id', 1)
+            self.next_sesion_id = data.get('next_sesion_id', 1)
+
+        except FileNotFoundError:
+            print("Archivo de datos no encontrado. Se iniciará con datos vacíos.")
