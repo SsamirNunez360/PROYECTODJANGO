@@ -1,5 +1,5 @@
 from datetime import datetime
-from plataforma import PlataformaTutorias
+from clases import PlataformaTutorias
 
 def mostrar_menu():
     print("\n== BIENVENIDO A TutorIAConnectPro ==")
