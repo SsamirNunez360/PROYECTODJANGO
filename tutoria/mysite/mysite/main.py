@@ -17,7 +17,8 @@ def mostrar_menu():
     print("5. Ver perfil de usuario")
     print("6. Volver al perfil anterior")
     print("7. Completar sesión")
-    print("8. Salir")
+    print("8. CRUD de usuarios")
+    print("9. Salir")
 
 def main():
     plataforma = PlataformaTutorias()
@@ -71,9 +72,46 @@ def main():
             plataforma.completar_sesion(id_sesion, calificacion)
 
         elif opcion == "8":
+            print("\n--- CRUD de Usuarios ---")
+            print("1. Ver usuario")
+            print("2. Actualizar usuario")
+            print("3. Eliminar usuario")
+            crud_op = input("Seleccione una opción CRUD: ")
+
+            if crud_op == "1":
+                id_usuario = input("ID del usuario a consultar: ")
+                plataforma.mostrar_perfil_usuario(id_usuario)
+
+            elif crud_op == "2":
+                id_usuario = input("ID del usuario a actualizar: ")
+                usuario = plataforma.diccionario_estudiantes.get(id_usuario) or plataforma.diccionario_tutores.get(id_usuario)
+                if usuario:
+                    nuevo_nombre = input(f"Nuevo nombre (actual: {usuario.nombre}): ") or usuario.nombre
+                    nuevo_email = input(f"Nuevo email (actual: {usuario.email}): ") or usuario.email
+                    usuario.nombre = nuevo_nombre
+                    usuario.email = nuevo_email
+                    print("Usuario actualizado correctamente.")
+                else:
+                    print("Usuario no encontrado.")
+
+            elif crud_op == "3":
+                id_usuario = input("ID del usuario a eliminar: ")
+                if id_usuario.startswith("E") and id_usuario in plataforma.diccionario_estudiantes:
+                    del plataforma.diccionario_estudiantes[id_usuario]
+                    print("Estudiante eliminado.")
+                elif id_usuario.startswith("T") and id_usuario in plataforma.diccionario_tutores:
+                    del plataforma.diccionario_tutores[id_usuario]
+                    print("Tutor eliminado.")
+                else:
+                    print("Usuario no encontrado.")
+            else:
+                print("Opción CRUD no válida.")
+
+        elif opcion == "9":
+            plataforma.guardar_datos()  # ← Añadir esta línea
             print("Gracias por usar TutorIAConnectPro. ¡Hasta luego!")
             break
-
+                    
         else:
             print("Opción no válida. Intente de nuevo.")
 
