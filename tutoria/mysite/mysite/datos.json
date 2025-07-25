@@ -1,1 +1,46 @@
-{}
+{
+    "estudiantes": [
+        {
+            "id": "E001",
+            "nombre": "Ssamir Nunez",
+            "email": "ssamirnunez147@gmail.com",
+            "nivel_academico": "Universidad",
+            "materias_interes": [
+                "Calculo",
+                "Algoritmos y estructura de datos"
+            ]
+        }
+    ],
+    "tutores": [
+        {
+            "id": "T001",
+            "nombre": "Jorge Munguia",
+            "email": "jamunguia@unah.hn",
+            "materias_especialidad": [
+                "Calculo",
+                "Algoritmos y estructura de datos",
+                "Circuitos electricos",
+                "Bases de datos"
+            ],
+            "calificacion_promedio": 99.99,
+            "disponibilidad": {
+                "2025-07-25 11:00": "libre"
+            }
+        },
+        {
+            "id": "T002",
+            "nombre": "Alma Betancourth",
+            "email": "anbetancourth@unah.hn",
+            "materias_especialidad": [
+                "Calculo",
+                "Algoritmos y estructura de datos",
+                "Circuitos electricos",
+                "Bases de datos"
+            ],
+            "calificacion_promedio": 99.0,
+            "disponibilidad": {
+                "2025-07-25 13:00": "libre"
+            }
+        }
+    ]
+}

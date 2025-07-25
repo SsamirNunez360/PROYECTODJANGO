@@ -160,6 +160,31 @@ class PlataformaTutorias:
         self.siguiente_id_sesion = 1
 
         self.cargar_datos("datos.json")
+        
+    def registrar_estudiante(self, nombre, email, nivel, materias_interes):
+        id_est = f"E{len(self.diccionario_estudiantes)+1:03}"
+        estudiante = Estudiante(id_est, nombre, email, nivel, materias_interes)
+        self.diccionario_estudiantes[id_est] = estudiante
+        return id_est
+
+    def registrar_tutor(self, nombre, email, especialidad, calificacion, disponibilidad):
+        id_tutor = f"T{len(self.diccionario_tutores)+1:03}"
+        tutor = Tutor(id_tutor, nombre, email, especialidad, calificacion, disponibilidad)
+        self.diccionario_tutores[id_tutor] = tutor
+        self.arbol_tutores.insertar(tutor)
+        return id_tutor
+
+
+    def mostrar_perfil_usuario(self, id_usuario):
+        usuario = self.diccionario_estudiantes.get(id_usuario) or self.diccionario_tutores.get(id_usuario)
+        if usuario:
+            self.pila_vistas_perfil.apilar(id_usuario)
+            print(f"\n--- Perfil de {usuario.nombre} ---")
+            print(f"ID: {usuario.id_usuario} | Tipo: {usuario.tipo_usuario}")
+            print(f"Email: {usuario.email}")
+        else:
+            print("Usuario no encontrado.")
+
 
     def cargar_datos(self, archivo):
         if os.path.exists(archivo):
@@ -215,3 +240,4 @@ class PlataformaTutorias:
             }, f, indent=4)
         print("Datos guardados")
 
+    
