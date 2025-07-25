@@ -65,6 +65,7 @@ def main():
             plataforma.completar_sesion(id_sesion, calificacion)
 
         elif opcion == "8":
+            plataforma.guardar_datos()  # ← Añadir esta línea
             print("Gracias por usar TutorIAConnectPro. ¡Hasta luego!")
             break
 
