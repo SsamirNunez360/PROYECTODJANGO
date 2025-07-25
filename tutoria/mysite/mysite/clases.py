@@ -1,6 +1,6 @@
 class Tutoria:
     
-    def __init__(self, nombre):""-----
+    def __init__(self, nombre):""
     
     
 class Estudiante:
