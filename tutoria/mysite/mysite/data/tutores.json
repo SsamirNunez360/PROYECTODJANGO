@@ -12,5 +12,22 @@
         "calificacion_promedio": 5.0,
         "disponibilidad": {},
         "historial_tutorias": []
+    },
+    {
+        "id_usuario": "T002",
+        "nombre": "Fernando Mejia",
+        "email": "fer.mejia@unah.edu.hn",
+        "tipo_usuario": "Tutor",
+        "materias_especialidad": [
+            "Calculo",
+            "Matematicas",
+            "Geometria"
+        ],
+        "calificacion_promedio": 5.0,
+        "disponibilidad": {
+            "2025-10-25 10:30": "libre",
+            "2025-10-15 10:30": "libre"
+        },
+        "historial_tutorias": []
     }
 ]

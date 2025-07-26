@@ -61,7 +61,7 @@ class ListaEnlazada:
         """Recorre la lista y muestra los detalles de cada sesión."""
         actual = self.cabeza
         if not actual:
-            print("    Historial vacío.")
+            print("==Historial vacío.==")
             return
         while actual:
             s = actual.dato
