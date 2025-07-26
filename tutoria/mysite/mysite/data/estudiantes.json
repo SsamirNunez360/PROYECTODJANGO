@@ -22,17 +22,5 @@
             "Ingles"
         ],
         "historial_tutorias": []
-    },
-    {
-        "id_usuario": "E005",
-        "nombre": "Rocio",
-        "email": "rocio.guevara@unah.hn",
-        "tipo_usuario": "Estudiante",
-        "nivel_academico": "Universitario",
-        "materias_interes": [
-            "Programacion",
-            "Ingles"
-        ],
-        "historial_tutorias": []
     }
 ]
