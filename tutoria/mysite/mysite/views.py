@@ -2,14 +2,22 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
-from lib.userlib  import LibUser
-from lib.libDulce import LibDulce
-from lib.libProveedor import LibProveedor
-from lib.libResenia import LibResenia
-from lib.libFavorito import LibFavorito
-from lib.libPromocion import LibPromocion
-from lib.userlib import LibUser
-from lib.libDeseo import LibDeseo
+# Django
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+
+# Dominio de la plataforma de tutorías (definido en clases.py)
+# Si este archivo (views.py) y clases.py están en la MISMA app:
+from .clases import (
+    SesionTutoria,
+    Usuario,
+    Estudiante,
+    Tutor,
+    Cola,
+    ArbolBinarioBusqueda,
+    PlataformaTutorias,
+)
+
 
 def index(request):
     #resp = lista.obtener()
