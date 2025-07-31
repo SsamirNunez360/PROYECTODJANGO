@@ -1,12 +1,11 @@
 import json
 import os
 from datetime import datetime
-import heapq 
+import heapq #Importación para Gráfos
 
 # =========================================================
 # CLASES DE ENTIDADES Y ESTRUCTURAS DE DATOS BASE
 # =========================================================
-
 class SesionTutoria:
     """Representa una única sesión de tutoría."""
     def __init__(self, id_sesion, id_estudiante, id_tutor, materia, fecha_hora, estado, calificacion_dada=0):
@@ -62,7 +61,7 @@ class ListaEnlazada:
         """Recorre la lista y muestra los detalles de cada sesión."""
         actual = self.cabeza
         if not actual:
-            print("     Historial vacío.")
+            print("==Historial vacío.==")
             return
         while actual:
             s = actual.dato
@@ -77,7 +76,6 @@ class ListaEnlazada:
             items.append(actual.dato.to_dict())
             actual = actual.siguiente
         return items
-
 
 # --- Clases de Usuarios ---
 class Usuario:
@@ -106,7 +104,6 @@ class Usuario:
     def __str__(self):
         return f"ID: {self.id_usuario}, Nombre: {self.nombre}, Tipo: {self.tipo_usuario}"
 
-
 class Estudiante(Usuario):
     """Representa a un estudiante en la plataforma."""
     def __init__(self, id_usuario, nombre, email, nivel_academico, materias_interes, historial_tutorias_data=None):
@@ -133,7 +130,6 @@ class Estudiante(Usuario):
             "materias_interes": self.materias_interes,
             "historial_tutorias": self.historial_tutorias.to_list()
         }
-
 
 class Tutor(Usuario):
     """Representa a un tutor en la plataforma."""
@@ -430,17 +426,12 @@ class PlataformaTutorias:
                         self.historial_general_sesiones.append(sesion)
                     if sesiones_data:
                         last_id = max([int(s["id_sesion"][1:]) for s in sesiones_data])
-                        self.siguiente_id_sesion = last_id + 1
-            # print("Sesiones cargadas.") # COMENTADO
 
             # Cargar solicitudes (cola)
             if os.path.exists(self.ARCHIVO_DATOS_SOLICITUDES):
                 with open(self.ARCHIVO_DATOS_SOLICITUDES, 'r') as f:
                     solicitudes_data = json.load(f)
                     self.cola_solicitudes = Cola(items=solicitudes_data) 
-            # print("Solicitudes cargadas.") # COMENTADO
-
-            # print("Datos cargados exitosamente.") # COMENTADO
 
         except json.JSONDecodeError as e:
             # print(f"Error al decodificar JSON al cargar datos: {e}. Asegúrese de que los archivos estén bien formados. Iniciando con datos vacíos.") # COMENTADO
@@ -460,29 +451,28 @@ class PlataformaTutorias:
 
     def _guardar_datos(self):
         """Guarda todos los datos en los archivos JSON individuales."""
-        # print("Guardando datos...") # COMENTADO
         try:
             # Guardar estudiantes
             with open(self.ARCHIVO_DATOS_ESTUDIANTES, 'w') as f:
                 json.dump([est.to_dict() for est in self.diccionario_estudiantes.values()], f, indent=4)
-            # print("Estudiantes guardados.") # COMENTADO
+            print("Estudiantes guardados.")
 
             # Guardar tutores
             with open(self.ARCHIVO_DATOS_TUTORES, 'w') as f:
                 json.dump([tut.to_dict() for tut in self.diccionario_tutores.values()], f, indent=4)
-            # print("Tutores guardados.") # COMENTADO
+            print("Tutores guardados.")
 
             # Guardar sesiones
             with open(self.ARCHIVO_DATOS_SESIONES, 'w') as f:
                 json.dump([ses.to_dict() for ses in self.historial_general_sesiones], f, indent=4)
-            # print("Sesiones guardadas.") # COMENTADO
+            print("Sesiones guardadas.")
 
             # Guardar solicitudes
             with open(self.ARCHIVO_DATOS_SOLICITUDES, 'w') as f:
                 json.dump(self.cola_solicitudes.to_list(), f, indent=4) 
-            # print("Solicitudes guardadas.") # COMENTADO
+            print("Solicitudes guardadas.")
 
-            # print("Datos guardados exitosamente.") # COMENTADO
+            print("Datos guardados exitosamente.")
         except Exception as e:
             print(f"Error al guardar datos: {e}") # Mantener este print para depuración de errores de guardado
 

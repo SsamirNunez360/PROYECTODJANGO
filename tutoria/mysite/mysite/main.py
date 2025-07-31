@@ -22,7 +22,6 @@ def mostrar_menu():
     print("====================================")
 
 def main():
-    """Función principal para ejecutar la aplicación."""
     plataforma = PlataformaTutorias()
 
     while True:
