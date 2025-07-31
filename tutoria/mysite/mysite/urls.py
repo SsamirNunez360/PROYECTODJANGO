@@ -7,6 +7,8 @@ urlpatterns = [
     path('iniciar', views.iniciar, name='iniciar'),
     path('login/', views.login, name='login'),
     path('home/', views.home, name='home'),
+    path('/', views.index, name='index'),
+    path('tutores_perfil/', views.tutores_perfil, name='tutores_perfil'),
 
     # Rutas para dulces
     path('dulce/', views.dulce, name='dulce'),

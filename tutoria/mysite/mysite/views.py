@@ -1,4 +1,6 @@
-
+import os
+import json
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -33,6 +35,17 @@ def buscar_dulce(request):
 
 def home(request):
     return render(request,"home.html")
+
+def tutores_perfil(request):
+    ruta_json = os.path.abspath(os.path.join(settings.BASE_DIR, '..', '..', 'data', 'tutores.json'))
+    try:
+        with open(ruta_json, 'r', encoding='utf-8') as archivo:
+            tutores = json.load(archivo)
+    except FileNotFoundError:
+        return HttpResponse(f"Archivo no encontrado en: {ruta_json}", status=404)
+
+    return render(request, 'tutores_perfil.html', {'tutores': tutores})
+
 
 def recomendacion(request):
     return render(request,"recomendacion.html")
