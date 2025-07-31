@@ -22,5 +22,18 @@
             "Ingles"
         ],
         "historial_tutorias": []
+    },
+    {
+        "id_usuario": "E006",
+        "nombre": "Osmer Anariba",
+        "email": "osmer.anariba@unah.hn",
+        "tipo_usuario": "Estudiante",
+        "nivel_academico": "Universidad",
+        "materias_interes": [
+            "Calculo",
+            "Algoritmos y estructura de datos",
+            "Finanzas administativas"
+        ],
+        "historial_tutorias": []
     }
 ]
