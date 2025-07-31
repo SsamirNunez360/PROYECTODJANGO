@@ -1,0 +1,20 @@
+[
+    {
+        "id_sesion": "S001",
+        "id_estudiante": "E001",
+        "id_tutor": "T001",
+        "materia": "Matematicas",
+        "fecha_hora": "2023-10-26 10:00",
+        "estado": "Completada",
+        "calificacion_dada": 5
+    },
+    {
+        "id_sesion": "S002",
+        "id_estudiante": "E001",
+        "id_tutor": "T001",
+        "materia": "Algoritmos",
+        "fecha_hora": "2024-01-15 14:30",
+        "estado": "Confirmada",
+        "calificacion_dada": 0
+    }
+]
