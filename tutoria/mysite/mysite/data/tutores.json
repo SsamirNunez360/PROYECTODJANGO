@@ -1,16 +1,1 @@
-[
-    {
-        "id_usuario": "T001",
-        "nombre": "Oscar Pineda",
-        "email": "oscaropineda@unah.hn",
-        "tipo_usuario": "Tutor",
-        "materias_especialidad": [
-            "Matematicas",
-            "Programaci\u00f3n",
-            "Fisica"
-        ],
-        "calificacion_promedio": 5.0,
-        "disponibilidad": {},
-        "historial_tutorias": []
-    }
-]
+[]

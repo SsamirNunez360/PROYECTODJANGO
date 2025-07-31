@@ -1,0 +1,24 @@
+{
+    "estudiantes": [
+        {
+            "id_usuario": "E001",
+            "nombre": "Alma",
+            "email": "anbetancourth@unah.hn",
+            "tipo_usuario": "Estudiante",
+            "nivel_academico": "Bachillerato",
+            "materias_interes": [
+                "Matematixas",
+                "Progrmacion"
+            ],
+            "historial_tutorias": []
+        }
+    ],
+    "tutores": [],
+    "sesiones": [],
+    "solicitudes": [],
+    "next_ids": {
+        "estudiante": 2,
+        "tutor": 1,
+        "sesion": 1
+    }
+}
