@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TutorIA Connect Pro</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --primary:#2563eb;
+      --primary-light:#3b82f6;
+      --gray-light:#f9fafb;
+      --text-dark:#1f2937;
+    }
+    body{
+      background:var(--gray-light);
+      font-family:'Nunito',sans-serif;
+      margin:0;
+    }
+    .navbar{
+      background:#fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
+    }
+    .navbar-brand{
+      font-weight:700;
+      color:var(--primary);
+      font-size:1.3rem;
+    }
+    .btn-primary-custom{
+      background:linear-gradient(90deg,var(--primary),var(--primary-light));
+      border:none;
+      border-radius:8px;
+      color:#fff;
+      font-weight:600;
+      padding:8px 16px;
+      text-decoration:none;
+      display:inline-block;
+    }
+    .btn-primary-custom:hover{ opacity:.9; }
+
+    .hero-section{
+      background:#fff;
+      border-radius:10px;
+      padding:20px;
+      box-shadow:0 4px 10px rgba(0,0,0,.05);
+      margin:20px auto;
+      text-align:center;
+    }
+    .hero-section h1{
+      font-weight:700;
+      color:var(--text-dark);
+      margin-bottom:15px;
+    }
+    .hero-section p{
+      color:#6b7280;
+      font-size:1.1rem;
+      margin-bottom:20px;
+    }
+
+    /* Tamaño uniforme para todas las imágenes del carrusel */
+    .carousel-inner img {
+      height: 400px;         /* Alto uniforme */
+      width: 100%; 
+      object-fit: cover;     /* Recorta manteniendo proporción */
+      border-radius: 8px;
+    }
+
+    footer{
+      text-align:center;
+      padding:10px;
+      font-size:.9rem;
+      color:#6b7280;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
+      <div class="ms-auto">
+        <a href="/login" class="btn-primary-custom">Iniciar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero con imágenes -->
+  <div class="container">
+    <div class="hero-section">
+      <h1>Bienvenido a TutorIA Connect Pro</h1>
+      <p>Encuentra tutores expertos y agenda tus sesiones de manera personalizada.</p>
+
+      <!-- Carrusel de imágenes -->
+      <div id="carouselExample" class="carousel slide">
+        <!-- Indicadores -->
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="https://img.freepik.com/fotos-premium/escritorio-profesor-material-escritura-libro-manzana_89381-1550.jpg" alt="Tutorías 1">
+          </div>
+          <div class="carousel-item">
+            <img src="https://innovateschools.org/wp-content/uploads/2021/11/211122-Black-Teenager-Tutoring-Latino-Teenager.jpg" alt="Tutorías 2">
+          </div>
+          <div class="carousel-item">
+            <img src="https://jocejob.com/wp-content/uploads/2-1-1024x576-1.png" alt="Tutorías 3">
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+      </div>
+
+      <!-- Botón iniciar sesión centrado -->
+      <a href="/login" class="btn-primary-custom mt-4">Iniciar sesión</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 TutorIA Connect Pro - Todos los derechos reservados
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Autoplay del carrusel
+    document.addEventListener('DOMContentLoaded', function () {
+      const el = document.querySelector('#carouselExample');
+      new bootstrap.Carousel(el, {
+        interval: 4000,   // cambia cada 4s
+        ride: 'carousel', // inicia automáticamente
+        pause: 'hover',   // pausa al pasar el mouse
+        wrap: true,       
+        touch: true
+      });
+    });
+  </script>
+</body>
+</html>
