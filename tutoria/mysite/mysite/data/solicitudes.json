@@ -1,0 +1,12 @@
+[
+    {
+        "id_estudiante": "E006",
+        "materia": "Calculo",
+        "fecha_hora_preferida": "2025-08-04 11:00"
+    },
+    {
+        "id_estudiante": "E001",
+        "materia": "Algoritmos y estructura de datos",
+        "fecha_hora_preferida": "2025-08-06 10:00"
+    }
+]

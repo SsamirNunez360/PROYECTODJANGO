@@ -1,0 +1,45 @@
+[
+    {
+        "id_usuario": "E001",
+        "nombre": "Alma",
+        "email": "anbetancourth@unah.hn",
+        "tipo_usuario": "Estudiante",
+        "nivel_academico": "Universitario",
+        "materias_interes": [
+            "Algoritmos",
+            "Matematicas"
+        ],
+        "historial_tutorias": [
+            {
+                "id_sesion": "S001",
+                "id_estudiante": "E001",
+                "id_tutor": "T001",
+                "materia": "Matematicas",
+                "fecha_hora": "2023-10-26 10:00",
+                "estado": "Completada",
+                "calificacion_dada": 5
+            },
+            {
+                "id_sesion": "S002",
+                "id_estudiante": "E001",
+                "id_tutor": "T001",
+                "materia": "Algoritmos",
+                "fecha_hora": "2024-01-15 14:30",
+                "estado": "Confirmada",
+                "calificacion_dada": 0
+            }
+        ]
+    },
+    {
+        "id_usuario": "E002",
+        "nombre": "Ssamir Nu\u00f1ez",
+        "email": "olber.nunez@unah.hn",
+        "tipo_usuario": "Estudiante",
+        "nivel_academico": "Universitario",
+        "materias_interes": [
+            "Matematicas",
+            "Algoritmos"
+        ],
+        "historial_tutorias": []
+    }
+]
