@@ -1,6 +1,11 @@
+# mysite/views.py
+
 import os
 import json
+import unicodedata
+from django.urls import reverse
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -30,512 +35,206 @@ def index(request):
 def login(request):
     return render(request,"login.html")
 
-def buscar_dulce(request):
-    return render(request,"buscar_dulce.html")
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        with open('ruta/a/tu/archivo/usuarios.json', 'r') as f:
+            usuarios = json.load(f)
+
+        usuario = next((u for u in usuarios if u['email'] == email and u['password'] == password), None)
+
+        if usuario:
+            # Usuario autenticado
+            request.session['usuario'] = usuario  # Guardar info en sesión
+            return redirect('home')  # O donde quieras redirigir
+        else:
+            messages.error(request, 'Email o contraseña incorrectos')
+
+    return render(request, 'login.html')
+
+
+def registrar_estudiante(request):
+    """
+    Maneja el registro de un nuevo estudiante.
+    """
+    if request.method == 'POST':
+        # --- Esto es lo que reemplaza a `input()` ---
+        # Accede a los datos del formulario usando request.POST
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        nivel = request.POST.get('nivel_academico')
+        materias_interes_str = request.POST.get('materias_interes')
+        
+        # --- Esto es lo que reemplaza a `split(',')` ---
+        # Procesa la cadena de materias en una lista
+        materias_interes = [m.strip() for m in materias_interes_str.split(',')]
+        
+        # --- Esto reemplaza a `plataforma.registrar_estudiante()` ---
+        # Llama a tu función para registrar al estudiante
+        # Asegúrate de tener una instancia de tu clase `Plataforma` o un método estático
+        # plataforma.registrar_estudiante(nombre, email, nivel, materias_interes)
+        
+        # Redirige a una página de éxito o a la página principal después del registro
+        # Reemplaza 'home' con el nombre de la URL a la que quieras redirigir
+        return redirect(reverse('home')) 
+    
+    # Si la solicitud es GET, simplemente renderiza el formulario vacío
+    return render(request, 'registrar_estudiante.html')
+
 
 def home(request):
     return render(request,"home.html")
 
+
+
+
+def normalize(text):
+    # Convierte a minúsculas y elimina tildes
+    text = text.lower()
+    return ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+
 def tutores_perfil(request):
-    ruta_json = os.path.abspath(os.path.join(settings.BASE_DIR, '..', '..', 'data', 'tutores.json'))
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'tutores.json')
+
+    subject = request.GET.get('subject', '').strip()
+    normalized_subject = normalize(subject)
+
     try:
-        with open(ruta_json, 'r', encoding='utf-8') as archivo:
+        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
             tutores = json.load(archivo)
     except FileNotFoundError:
-        return HttpResponse(f"Archivo no encontrado en: {ruta_json}", status=404)
+        tutores = []
 
-    return render(request, 'tutores_perfil.html', {'tutores': tutores})
+    # Filtrar tutores que tengan la materia (normalizada)
+    if normalized_subject:
+        tutores_filtrados = []
+        for tutor in tutores:
+            materias_norm = [normalize(m) for m in tutor.get('materias_especialidad', [])]
+            if normalized_subject in materias_norm:
+                tutores_filtrados.append(tutor)
+    else:
+        tutores_filtrados = tutores
+
+    return render(request, 'tutores_perfil.html', {'tutores': tutores_filtrados, 'subject': subject})
 
 
-def recomendacion(request):
-    return render(request,"recomendacion.html")
-
+# Ejemplo de vista de login
 def iniciar(request):
-    libUser = LibUser()
-    email = request.POST['email']
-    password = request.POST['password']
-    resp = libUser.login(email, password)
-    if(resp):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        plataforma = PlataformaTutorias()
+        resultado = plataforma.iniciar_sesion(email, password)
+        
+        if not resultado:
+            messages.error(request, 'Credenciales incorrectas')
+            return render(request, 'login.html')
+        
+        # Guardar en sesión según el tipo de usuario
+        request.session['user_type'] = resultado['tipo']
+        request.session['user_email'] = email
+        
+        if resultado['tipo'] == 'estudiante':
+            request.session['user_id'] = resultado['objeto'].id_usuario
+            return redirect('dashboard_estudiante')
+        elif resultado['tipo'] == 'tutor':
+            request.session['user_id'] = resultado['objeto'].id_usuario
+            return redirect('dashboard_tutor')
+        else:
+            return redirect('dashboard_basico')
+    
+    return render(request, 'login.html')
 
-        return redirect("/home")
-    else: 
-        return redirect("/login")
+# Ejemplo de vista de registro
+def registrar(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        
+        plataforma = PlataformaTutorias()
+        if plataforma.registrar_usuario_basico(email, password, nombre, apellido):
+            messages.success(request, 'Registro exitoso')
+            return redirect('login')
+        else:
+            messages.error(request, 'El email ya está registrado')
+    
+    return render(request, 'registro.html')
     
 
+def menu_principal(request):
+    return render(request, 'menu.html')
+
+
+# Se mantiene la función para mostrar el formulario
+def registrar_estudiante_get(request):
+    return render(request, 'registrar_estudiante.html')
+
+def listar_estudiante(request):
+    return render(request, 'listar_estudiante.html')
+
+def registrar_tutor(request):
+    """
+    Vista que maneja el registro de un nuevo tutor.
+    """
+    if request.method == 'POST':
+        # 1. Extraer los datos del formulario
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        materias_especialidad_str = request.POST.get('materias_especialidad')
+        
+        # 2. Procesar las materias de especialidad (separar por coma)
+        materias_especialidad = [m.strip() for m in materias_especialidad_str.split(',')]
+        
+        # 3. Llamar a la lógica de negocio para registrar al tutor
+        plataforma = PlataformaTutorias() # Asumiendo que tu clase PlataformaTutorias tiene un método para esto
+        if plataforma.registrar_tutor(nombre, email, materias_especialidad):
+             messages.success(request, '¡Tutor registrado exitosamente!')
+             return redirect(reverse('home')) # Redirige a la página principal
+        else:
+            messages.error(request, 'Error al registrar el tutor. El correo electrónico ya existe.')
+            return render(request, 'registrar_tutor.html')
+
+    # Si la solicitud es GET, simplemente muestra el formulario
+    return render(request, 'registrar_tutor.html')
+
+
+def ver_perfil(request):
+    return render(request, 'ver_perfil.html')
+
+def listar_estudiantes(request):
+    return render(request, 'listar_estudiantes.html')
+
+def listar_tutores(request):
+    return render(request, 'listar_tutores.html')
+
+def actualizar_usuario(request):
+    return render(request, 'actualizar_usuario.html')
+
+def eliminar_usuario(request):
+    return render(request, 'eliminar_usuario.html')
+
+def solicitar_tutoria(request):
+    return render(request, 'solicitar_tutoria.html')
+
+def listar_solicitudes(request):
+    return render(request, 'listar_solicitudes.html')
+
+def asignar_tutoria(request):
+    return render(request, 'asignar_tutoria.html')
+
+def completar_sesion(request):
+    return render(request, 'completar_sesion.html')
+
+def historial_sesiones(request):
+    return render(request, 'historial_sesiones.html')
+
+def salir(request):
+    return redirect('/')  # Redirige a inicio o login
 
 ########
-
-def dulce(request):
-    return render(request,"dulce.html")
-
-def create_dulce(request):
-    return render(request,"create_dulce.html")
-
-def insert_dulce(request):
-    id = request.POST['id']
-    nombre = request.POST['nombre']
-    marca = request.POST['marca']
-    descripcion = request.POST['descripcion']
-    precio = request.POST['precio']
-    cantidad = request.POST['cantidad']
-    libDulce = LibDulce()
-    resp = libDulce.create(id, nombre, marca, descripcion, precio, cantidad)
-    if(resp):
-        return redirect("/dulce")
-    else:
-        return redirect("/dulce/crear")
-
-
-def edit_dulce(request):
-    id = request.POST['id']
-    libDulce = LibDulce()
-    dulce = libDulce.get_dulce_by_id(id)
-    return render(request,"edit_dulce.html",{'dulce':dulce})
-
-def update_dulce(request):
-    id = request.POST['id']
-    nombre = request.POST['nombre']
-    marca = request.POST['marca']
-    descripcion = request.POST['descripcion']
-    precio = request.POST['precio']
-    cantidad = request.POST['cantidad']
-    libDulce = LibDulce()
-    resp = libDulce.edit_dulce(id, nombre, marca, descripcion, precio, cantidad)
-    if(resp):
-        return redirect("/dulce")
-    else:
-        return redirect("/dulce/edit?id="+id)
-    
-def remove_dulce(request):
-    id = request.GET['id']
-    libDulce = LibDulce()
-    dulce = libDulce.get_dulce_by_id(id)
-    return render(request,"remove_dulce.html",{'dulce':dulce})
-
-def delete_dulce(request):
-    id = request.POST['id']
-    libDulce = LibDulce()
-    resp = libDulce.eliminar(id)
-    if(resp):
-        return redirect("/dulce")
-    else:
-        return redirect("/dulce/remove?id="+id)
-    
-def dulce(request):
-    libDulce = LibDulce()
-    lista = libDulce.get_producto()
-    return render(request,"dulce.html",{"lista":lista})
-
-def comprar_dulce(request):
-    dulce_id = request.GET.get('id')
-    lib_dulce = LibDulce()
-
-    if lib_dulce.comprar_dulce(dulce_id):
-        return redirect('/buscar_dulce')
-    else:
-        return render(request, 'error.html', {'mensaje': 'No hay suficiente stock o dulce no encontrado.'})
-
-
-def dulce_list(request):
-    dulces = dulce.objects.all()
-    low_stock = [d for d in dulces if d.cantidad <= d.stock_minimo]
-    critical_stock = [d for d in low_stock if d.cantidad <= d.stock_minimo * 0.3]
-    
-    return render(request, 'dulce.html', {
-        'dulces': dulces,
-        'low_stock': low_stock,
-        'critical_stock': critical_stock
-    })
-
-####################################
-
-def resenia(request):
-    return render(request,"resenia.html")
-
-def create_resenia(request):
-    return render(request,"create_resenia.html")
-
-def insert_resenia(request):
-    id = request.POST['id']
-    descripcion = request.POST['descripcion']
-    libResenia = LibResenia()
-    resp = libResenia.create(id, descripcion)
-    if(resp):
-        return redirect("/resenia")
-    else:
-        return redirect("/resenia/crear")
-
-
-def edit_resenia(request):
-    id = request.POST['id']
-    libResenia = LibResenia()
-    resenia = libResenia.get_resenia_by_id(id)
-    return render(request,"edit_resenia.html",{'resenia':resenia})
-
-def update_resenia(request):
-    id = request.POST['id']
-    descripcion = request.POST['descripcion']
-    libResenia = LibResenia()
-    resp = libResenia.edit_resenia(id, descripcion)
-    if(resp):
-        return redirect("/resenia")
-    else:
-        return redirect("/resenia/edit?id="+id)
-    
-def remove_resenia(request):
-    id = request.GET['id']
-    libResenia = LibResenia()
-    resenia = libResenia.get_resenia_by_id(id)
-    return render(request,"remove_resenia.html",{'resenia':resenia})
-
-def delete_resenia(request):
-    id = request.POST['id']
-    libResenia = LibResenia()
-    resp = libResenia.eliminar(id)
-    if(resp):
-        return redirect("/resenia")
-    else:
-        return redirect("/resenia/remove?id="+id)
-    
-def resenia(request):
-    libResenia = LibResenia()
-    lista = libResenia.get_resenia()
-
-    return render(request,"resenia.html",{"lista":lista})
-
-###########################################3
-
-def favorito(request):
-    return render(request,"favorito.html")
-
-def create_favorito(request):
-    return render(request,"create_favorito.html")
-
-def insert_favorito(request):
-    id = request.POST['id']
-    nombre = request.POST['nombre']
-    marca = request.POST['marca']
-    precio = request.POST['precio']
-    publico = request.POST['publico']
-    fecha = request.POST['fecha']
-    libFavorito = LibFavorito()
-    resp = libFavorito.create(id, nombre, marca, precio, publico, fecha)
-    if(resp):
-        return redirect("/favorito")
-    else:
-        return redirect("/favorito/crear")
-
-
-def edit_favorito(request):
-    id = request.POST['id']
-    libFavorito = LibFavorito()
-    favorito = libFavorito.get_favorito_by_id(id)
-    return render(request,"edit_favorito.html",{'favorito':favorito})
-
-def update_favorito(request):
-    id = request.POST['id']
-    nombre = request.POST['nombre']
-    marca = request.POST['marca']
-    precio = request.POST['precio']
-    publico = request.POST['publico']
-    fecha = request.POST['fecha']
-    libFavorito = LibFavorito()
-    resp = libFavorito.edit_favorito(id, nombre, marca, precio, publico, fecha)
-    if(resp):
-        return redirect("/favorito")
-    else:
-        return redirect("/favorito/edit?id="+id)
-    
-def remove_favorito(request):
-    id = request.GET['id']
-    libFavorito = LibFavorito()
-    favorito = libFavorito.get_favorito_by_id(id)
-    return render(request,"remove_favorito.html",{'favorito':favorito})
-
-def delete_favorito(request):
-    id = request.POST['id']
-    libFavorito = LibFavorito()
-    resp = libFavorito.eliminar(id)
-    if(resp):
-        return redirect("/favorito")
-    else:
-        return redirect("/favorito/remove?id="+id)
-    
-def favorito(request):
-    libFavorito = LibFavorito()
-    lista = libFavorito.get_favorito()
-
-    return render(request,"favorito.html",{"lista":lista})
-
-##########################################################
-
-
-######### Vistas para Proveedor ##########
-
-def proveedor(request):
-    libProveedor = LibProveedor()
-    proveedores = libProveedor.get_proveedores()
-    return render(request, "proveedor.html", {'proveedores': proveedores})
-
-def create_proveedor(request):
-    return render(request, "create_proveedor.html")
-
-def insert_proveedor(request):
-    if request.method == 'POST':
-        id = request.POST.get("id")
-        nombre = request.POST.get("nombre")
-        email = request.POST.get("email")
-        direccion = request.POST.get("direccion")
-        telefono = request.POST.get("telefono")
-        libProveedor = LibProveedor()
-        if libProveedor.create(id, nombre, email, direccion, telefono):
-            return redirect('/proveedor')
-        else:
-            return redirect('/proveedor/crear')
-    return redirect('/proveedor')
-
-
-def edit_proveedor(request, id):  # Aquí 'id' se pasa desde la URL
-    libProveedor = LibProveedor()
-
-    if request.method == 'GET':
-        proveedor = libProveedor.get_proveedor_by_id(id)  # Usar 'id' directamente
-        return render(request, "edit_proveedor.html", {'proveedor': proveedor})
-
-    elif request.method == 'POST':
-        nombre = request.POST['nombre']
-        email = request.POST['email']
-        direccion = request.POST['direccion']
-        telefono = request.POST['telefono']
-
-        resp = libProveedor.edit_proveedor(id, nombre, email, direccion, telefono)
-
-        if resp:
-            return redirect("/proveedor")
-        else:
-            return redirect(f"/proveedor/edit/{id}")  # Cambiar a URL correcta
-
-
-
-def update_proveedor(request):
-        id = request.POST.get('id')
-        nombre = request.POST['nombre']
-        email = request.POST['email']
-        direccion = request.POST['direccion']
-        telefono = request.POST['telefono']
-        libProveedor = LibProveedor()
-        resp = libProveedor.edit_proveedor(id, nombre, email, direccion, telefono)
-        if resp:
-            return redirect("/proveedor")
-        else:
-            return redirect(f"/proveedor/edit/{id}/") 
-
-def remove_proveedor(request):
-    id = request.GET.get('id')
-    libProveedor = LibProveedor()
-    proveedor = libProveedor.get_proveedor_by_id(id)
-    return render(request, "remove_proveedor.html", {'proveedor': proveedor})
-    if resp:
-            return redirect("/proveedor")
-    else:
-            return redirect(f"/proveedor/remove/{id}/")
-    
-
-
-def delete_proveedor(request):
-    if request.method == 'POST':  # Solo procesar si es un POST
-        id = request.POST.get('id')  # Obtener el ID desde el formulario
-        libProveedor = LibProveedor()
-        resp = libProveedor.eliminar(id)  # Llamar al método para eliminar
-
-        if resp:
-            return redirect("/proveedor")
-        else:
-            return redirect(f"/proveedor/remove?id={id}")
-    return redirect("/proveedor")
-
-
-    
-def registro(request):
-    return render(request,"registro.html")
-
-def create_registro(request):
-    return render(request,"create_registro.html")
-
-def insert_registro(request):
-    email = request.POST['email']
-    password = request.POST['password']
-    nombre = request.POST['nombre']
-    apellido = request.POST['apellido']
-    libUser = LibUser()
-    resp = libUser.create(email, password, nombre, apellido)
-    if(resp):
-        return redirect("/registro")
-    else:
-        return redirect("/registro/crear")
-
-
-def edit_registro(request):
-    email = request.POST['email']
-    libUser = LibUser()
-    registro = libUser.get_user_by_email(email)
-    return render(request,"edit_registro.html",{'registro':registro})
-
-def update_registro(request):
-    email = request.POST['email']
-    password = request.POST['password']
-    nombre = request.POST['nombre']
-    apellido = request.POST['apellido']
-    libUser = LibUser()
-    resp = libUser.edit_user(email, password, nombre, apellido)
-    if(resp):
-        return redirect("/registro")
-    else:
-        return redirect("/registro/edit?email="+email)
-    
-def remove_registro(request):
-    email = request.GET['email']
-    libUser = LibUser()
-    registro = libUser.get_user_by_email(email)
-    return render(request,"remove_registro.html",{'registro':registro})
-
-def delete_registro(request):
-    email = request.POST['email']
-    libUser = LibUser()
-    resp = libUser.eliminar(email)
-    if(resp):
-        return redirect("/registro")
-    else:
-        return redirect("/registro/remove?email="+email)
-    
-def registro(request):
-    libUser = LibUser()
-    lista = libUser.get_users()
-    return render(request,"registro.html",{"lista":lista})
-
-
-def promocion(request):
-    return render(request,"promocion.html")
-
-def promocion(request):
-    libPromocion = LibPromocion()
-    promociones = libPromocion.get_promociones()  # Asegúrate que este método exista en LibPromocion
-    return render(request, "promocion.html", {'promociones': promociones})
-
-def create_promocion(request):
-    return render(request,"create_promocion.html")
-
-def edit_promocion(request, id):
-    libPromocion = LibPromocion()
-    
-    # Obtener la promoción a editar
-    promocion = libPromocion.get_by_id(id)  # Asegúrate que exista este método
-
-    if request.method == "POST":
-        codigo = request.POST['codigo']
-        nombre = request.POST['nombre']
-        descripcion = request.POST['descripcion']
-        descuento = request.POST['descuento']
-        fechainicio = request.POST['fecha_inicio']
-        fechafinal = request.POST['fecha_final']
-
-        # Actualizar promoción
-        actualizado = libPromocion.update(id, codigo, nombre, descripcion, descuento, fechainicio, fechafinal)
-
-        if actualizado:
-            return redirect("/promocion")
-        else:
-            return render(request, "edit_promocion.html", {'promocion': promocion, 'error': 'No se pudo actualizar'})
-    
-    return render(request, "edit_promocion.html", {'promocion': promocion})
-
-
-def insert_promocion(request):
-    if request.method == "POST":
-        codigo = request.POST['codigo']
-        nombre = request.POST['nombre']
-        descripcion = request.POST['descripcion']
-        descuento = request.POST['descuento']
-        fechainicio = request.POST['fecha_inicio']
-        fechafinal = request.POST['fecha_final']
-
-        libPromocion = LibPromocion()
-        resp = libPromocion.create(codigo, nombre, descripcion, descuento, fechainicio, fechafinal)
-
-        if resp:
-            return redirect("/promocion")
-        else:
-            return redirect("/promocion/crear")
-
-def update_promocion(request):
-    id = request.POST['id']
-    nombre = request.POST['nombre']
-    descripcion = request.POST['descripcion']
-    descuento = request.POST['descuento']
-    fecha_inicio = request.POST['fecha_inicio']
-    fecha_fin = request.POST['fecha_fin']
-
-    libPromocion = LibPromocion()
-    resp = libPromocion.edit_promocion(id, nombre, descripcion, descuento, fecha_inicio, fecha_fin)
-    
-    if resp:
-        return redirect("/promocion")
-    else:
-        return redirect(f"/promocion/edit?id={id}")
-
-def remove_promocion(request):
-    id = request.GET['id']
-
-    libPromocion = LibPromocion()
-    resp = libPromocion.delete_promocion(id)
-
-    return redirect("/promocion")
-
-def delete_promocion(request):
-    id = request.POST['id']
-    libPromocion = LibPromocion()
-    resp = libPromocion.eliminar(id)
-    if resp:
-        return redirect("/promocion")
-    else:
-        return redirect(f"/promocion/remove?id={id}")
-
-
-
-
-
-
-
-
-################################ 
-
-def buscar_dulce(request):
-    lib_dulce = LibDulce()
-    dulces = []
-    nombre = request.GET.get('nombre', None)
-    if nombre:
-        dulces = lib_dulce.search_by_name(nombre)
-    marca = request.GET.get('marca', None)
-    if marca:
-        dulces = lib_dulce.search_by_marca(marca)
-    return render(request, 'buscar_dulce.html', {'lista': dulces})
-
-######################################
-
-def lista_deseo(request):
-    # Obtener la lista de deseos de la sesión
-    lista_deseos = request.session.get('lista_deseos', {})
-
-    # Convertir la lista de deseos en un formato adecuado para pasar a la plantilla
-    productos = [
-        {
-            'id': key,
-            'nombre': item['nombre'],
-            'descripcion': item['descripcion'],
-            'precio': item['precio'],
-            'imagen_url': item['imagen_url'],
-        }
-        for key, item in lista_deseos.items()
-    ]
-
-    return render(request, 'lista_deseo.html', {'productos': productos})

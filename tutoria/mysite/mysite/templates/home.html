@@ -130,6 +130,7 @@
       <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
     </div>
     <div>
+      <a href="/registrar_estudiante">Registrar estudiante</a>
       <a href="/tutores_perfil">Ver tutores</a>
       <a href="/" class="btn-signup">Cerrar sesión</a>
     </div>
@@ -167,44 +168,49 @@
   </div>
 
   <!-- Subjects con imágenes -->
-  <div class="container">
-    <div class="subjects-section">
-      <h2>Asignaturas más populares</h2>
-      <div class="row g-3">
-        <div class="col-6 col-md-3">
-          <div class="subject-card">
-            <img src="https://www.cetys.mx/noticias/wp-content/uploads/2017/07/Portada_Mate.jpg" alt="Matemáticas">
-            <p>Matemáticas</p>
-          </div>
+<div class="container">
+  <div class="subjects-section">
+    <h2>Asignaturas más populares</h2>
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="subject-card" data-subject="Matematicas" style="cursor:pointer;">
+          <img src="https://www.cetys.mx/noticias/wp-content/uploads/2017/07/Portada_Mate.jpg" alt="matematicas">
+          <p>Matemáticas</p>
         </div>
-        <div class="col-6 col-md-3">
-          <div class="subject-card">
-            <img src="https://youtalkonline.com/wp-content/uploads/ingl%C3%A9s-en-casa.jpg" alt="Inglés">
-            <p>Inglés</p>
-          </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="subject-card" data-subject="Ingles" style="cursor:pointer;">
+          <img src="https://youtalkonline.com/wp-content/uploads/ingl%C3%A9s-en-casa.jpg" alt="ingles">
+          <p>Inglés</p>
         </div>
-        <div class="col-6 col-md-3">
-          <div class="subject-card">
-            <img src="https://www.magisnet.com/wp-content/uploads/2020/01/ensen%CC%83ar-ciencias.jpg" alt="Ciencias">
-            <p>Ciencias</p>
-          </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="subject-card" data-subject="Ciencias" style="cursor:pointer;">
+          <img src="https://www.magisnet.com/wp-content/uploads/2020/01/ensen%CC%83ar-ciencias.jpg" alt="ciencias">
+          <p>Ciencias</p>
         </div>
-        <div class="col-6 col-md-3">
-          <div class="subject-card">
-            <img src="https://pymstatic.com/16187/conversions/edades-de-la-historia-social.jpg" alt="Historia">
-            <p>Historia</p>
-          </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="subject-card" data-subject="Historia" style="cursor:pointer;">
+          <img src="https://pymstatic.com/16187/conversions/edades-de-la-historia-social.jpg" alt="historia">
+          <p>Historia</p>
         </div>
-        <div class="col-6 col-md-3">
-          <div class="subject-card">
-            <img src="https://saluddata.com/wp-content/uploads/2023/11/que-es-la-informatica.webp" alt="Informática">
-            <p>Informática</p>
-          </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="subject-card" data-subject="informatica" style="cursor:pointer;">
+          <img src="https://saluddata.com/wp-content/uploads/2023/11/que-es-la-informatica.webp" alt="Informatica">
+          <p>Informática</p>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<script>
+  document.querySelectorAll('.subject-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const subject = card.getAttribute('data-subject');
+      window.location.href = `/tutores_perfil?subject=${encodeURIComponent(subject)}`;
+    });
+  });
+</script>
