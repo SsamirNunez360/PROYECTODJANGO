@@ -1,121 +1,155 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Tutor</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root{
-            --primary:#2563eb;
-            --primary-light:#3b82f6;
-            --gray-light:#f9fafb;
-            --text-dark:#1f2937;
-            --muted:#6b7280;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TutorIA Connect Pro - Perfil del Tutor</title>
 
-        body{
-            background: var(--gray-light);
-            font-family: 'Nunito', sans-serif;
-            margin:0;
-            padding:0;
-        }
-        .navbar{
-            background:#fff;
-            box-shadow:0 2px 8px rgba(0,0,0,.05);
-            padding: 10px 20px;
-        }
-        .navbar-brand{
-            font-weight:700;
-            color:var(--primary);
-            font-size:1.2rem;
-        }
-        .navbar a{
-            font-weight:600;
-            font-size:0.9rem;
-            color: var(--text-dark);
-            margin-left: 15px;
-            text-decoration: none;
-        }
-        .btn-signup{
-            background:linear-gradient(90deg,var(--primary),var(--primary-light));
-            border:none;
-            color:#fff !important;
-            font-weight:600;
-            padding:5px 12px;
-            border-radius:8px;
-            font-size:0.85rem;
-        }
-        .hero{
-            background:#fff;
-            border-radius:10px;
-            padding:30px;
-            box-shadow:0 4px 10px rgba(0,0,0,0.05);
-            margin:20px auto;
-        }
-        .hero h1{
-            font-weight:700;
-            color:var(--text-dark);
-            margin-bottom:10px;
-            font-size:1.8rem;
-        }
-        .hero p{
-            color:var(--muted);
-            font-size:1rem;
-            margin-bottom:20px;
-        }
-        .form-control{
-            border-radius:10px;
-        }
-        .btn-search{
-            background:linear-gradient(90deg,var(--primary),var(--primary-light));
-            border:none;
-            color:#fff;
-            font-weight:600;
-            border-radius:10px;
-            padding:10px 20px;
-            width: 100%;
-        }
-    </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --gray-light: #f9fafb;
+      --text-dark: #1f2937;
+      --muted: #6b7280;
+    }
+    body {
+      background: var(--gray-light);
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    /* Navbar */
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 10px 20px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+    .navbar a {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      margin-left: 15px;
+      text-decoration: none;
+    }
+    .btn-signup {
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border: none;
+      color: #fff !important;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    /* Contenedor principal */
+    .container-main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+    h1 {
+      color: var(--text-dark);
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    /* Tarjeta tutor */
+    .card-tutor {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+    .card-tutor:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+    }
+    .card-tutor h2 {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    .card-tutor p strong {
+      color: var(--primary);
+    }
+    ul {
+      padding-left: 20px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+    ul li {
+      margin-bottom: 6px;
+    }
+    /* No tutors */
+    .no-tutors {
+      text-align: center;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 50px;
+    }
+  </style>
 </head>
 <body>
 
-    <nav class="navbar d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <a class="navbar-brand" href="{% url 'home' %}">🎓 TutorIA Connect Pro</a>
-        </div>
-        <div>
-            <a href="{% url 'listar_estudiantes' %}">Ver estudiantes</a>
-            <a href="{% url 'listar_tutores' %}">Ver tutores</a>
-            <a href="{% url 'logout' %}" class="btn-signup">Cerrar sesión</a>
-        </div>
-    </nav>
-    
-    <div class="container">
-        <div class="hero mt-5">
-            <h1 class="text-center">Registrar Nuevo Tutor</h1>
-            <p class="text-center text-muted">Completa el formulario para añadir un nuevo tutor a la plataforma.</p>
-            
-            <form action="{% url 'registrar_tutor' %}" method="post" class="mt-4">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre completo</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Correo electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="especialidades" class="form-label">Materias de especialidad (separadas por coma)</label>
-                    <input type="text" class="form-control" id="especialidades" name="materias_especialidad" required>
-                </div>
-                <button type="submit" class="btn btn-search mt-3">Registrar Tutor</button>
-            </form>
-        </div>
+  <!-- Navbar -->
+  <nav class="navbar d-flex justify-content-between align-items-center">
+    <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
+    <div>
+      <a href="/home">Inicio</a>
+      <a href="/" class="btn-signup">Cerrar sesión</a>
     </div>
+  </nav>
+
+  <!-- Contenedor principal -->
+  <div class="container-main">
+    <h1>Perfil de los Tutores</h1>
+
+    {% for tutor in tutores %}
+    <div class="card-tutor">
+      <h2>{{ tutor.nombre }}</h2>
+      <p><strong>Email:</strong> {{ tutor.email }}</p>
+      <p><strong>Tipo de usuario:</strong> {{ tutor.tipo_usuario }}</p>
+      <p><strong>Calificación promedio:</strong> {{ tutor.calificacion_promedio }}</p>
+
+      <p><strong>Materias de especialidad:</strong></p>
+      <ul>
+        {% for materia in tutor.materias_especialidad %}
+          <li>{{ materia }}</li>
+        {% endfor %}
+      </ul>
+
+      <p><strong>Disponibilidad:</strong></p>
+      <ul>
+        {% for fecha, estado in tutor.disponibilidad.items %}
+          <li>{{ fecha }}: {{ estado }}</li>
+        {% endfor %}
+      </ul>
+
+      <p><strong>Historial de tutorías:</strong></p>
+      <ul>
+        {% for sesion in tutor.historial_tutorias %}
+          <li>
+            {{ sesion.fecha_hora }} - {{ sesion.materia }} ({{ sesion.estado }}) - Calificación: {{ sesion.calificacion_dada }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% empty %}
+    <p class="no-tutors">No se encontró ningún tutor.</p>
+    {% endfor %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
