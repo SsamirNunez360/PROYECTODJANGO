@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime
-import heapq #Importación para Gráfos, nuevo
+import heapq
 
 # =========================================================
 # CLASES DE ENTIDADES Y ESTRUCTURAS DE DATOS BASE
@@ -13,9 +13,9 @@ class SesionTutoria:
         self.id_estudiante = id_estudiante
         self.id_tutor = id_tutor
         self.materia = materia
-        self.fecha_hora = fecha_hora # String 'YYYY-MM-DD HH:MM'
+        self.fecha_hora = fecha_hora  # String 'YYYY-MM-DD HH:MM'
         self.estado = estado  # Ej: "Pendiente", "Confirmada", "Completada", "Cancelada"
-        self.calificacion_dada = calificacion_dada # Calificación del estudiante al tutor (1-5)
+        self.calificacion_dada = calificacion_dada  # Calificación del estudiante al tutor (1-5)
 
     def __str__(self):
         return (f"Sesión {self.id_sesion} | Est: {self.id_estudiante} | Tut: {self.id_tutor} | "
@@ -88,7 +88,6 @@ class Usuario:
         
         self.historial_tutorias = ListaEnlazada()
         if historial_tutorias_data:
-            # Reconstruir la ListaEnlazada a partir de los datos cargados
             for sesion_dict in historial_tutorias_data:
                 self.historial_tutorias.agregar_al_final(SesionTutoria(
                     sesion_dict["id_sesion"], sesion_dict["id_estudiante"], 
@@ -98,7 +97,6 @@ class Usuario:
                 ))
 
     def agregar_a_historial(self, sesion_obj):
-        """Agrega una sesión al historial de tutorías del usuario."""
         self.historial_tutorias.agregar_al_final(sesion_obj)
 
     def __str__(self):
@@ -136,12 +134,11 @@ class Tutor(Usuario):
     def __init__(self, id_usuario, nombre, email, materias_especialidad, calificacion_promedio, disponibilidad, historial_tutorias_data=None):
         super().__init__(id_usuario, nombre, email, "Tutor", historial_tutorias_data)
         self.materias_especialidad = materias_especialidad
-        self.calificacion_promedio = calificacion_promedio # Clave para el Árbol Binario
-        self.disponibilidad = disponibilidad # {'YYYY-MM-DD HH:MM': 'libre'/'ocupado'}
+        self.calificacion_promedio = calificacion_promedio  # Clave para el Árbol Binario
+        self.disponibilidad = disponibilidad  # {'YYYY-MM-DD HH:MM': 'libre'/'ocupado'}
 
     def actualizar_disponibilidad(self, fecha_hora, estado):
         """Actualiza el estado de un bloque de tiempo en la disponibilidad del tutor."""
-        # Si la fecha_hora no existe, se añade. Si existe, se actualiza.
         self.disponibilidad[fecha_hora] = estado
 
     def __str__(self):
@@ -175,32 +172,21 @@ class Cola:
         """Retira y devuelve el primer elemento de la cola."""
         if not self.esta_vacia():
             return self.items.pop(0)
-        return None # La cola está vacía
+        return None
 
     def esta_vacia(self):
         """Verifica si la cola está vacía."""
         return len(self.items) == 0
 
-    def tamano(self):
-        """Devuelve el número de elementos en la cola."""
-        return len(self.items)
-
-    def ver_proximo(self):
-        """Devuelve el próximo elemento sin retirarlo."""
-        if not self.esta_vacia():
-            return self.items[0]
-        return None
-    
     def to_list(self):
         """Convierte la cola a una lista para serialización."""
         return self.items
-
 
 # --- Implementación de Árbol Binario de Búsqueda (BST) ---
 class NodoArbolBinario:
     """Un nodo individual para el Árbol Binario de Búsqueda."""
     def __init__(self, valor):
-        self.valor = valor  # Aquí valor será un objeto Tutor
+        self.valor = valor
         self.izquierda = None
         self.derecha = None
 
@@ -217,14 +203,12 @@ class ArbolBinarioBusqueda:
             self._insertar_recursivo(self.raiz, tutor_obj)
 
     def _insertar_recursivo(self, nodo_actual, tutor_obj):
-        """Método auxiliar recursivo para insertar."""
-        # Manejar el caso de calificaciones iguales insertando a la derecha
         if tutor_obj.calificacion_promedio < nodo_actual.valor.calificacion_promedio:
             if nodo_actual.izquierda is None:
                 nodo_actual.izquierda = NodoArbolBinario(tutor_obj)
             else:
                 self._insertar_recursivo(nodo_actual.izquierda, tutor_obj)
-        else: # Mayor o igual calificación
+        else:
             if nodo_actual.derecha is None:
                 nodo_actual.derecha = NodoArbolBinario(tutor_obj)
             else:
@@ -240,14 +224,11 @@ class ArbolBinarioBusqueda:
         return resultados
 
     def _buscar_recursivo(self, nodo, calificacion_minima, resultados):
-        """Método auxiliar recursivo para buscar tutores."""
         if nodo:
-            # Recorre inorden para encontrar todos los que cumplen la condición
             self._buscar_recursivo(nodo.izquierda, calificacion_minima, resultados)
             if nodo.valor.calificacion_promedio >= calificacion_minima:
                 resultados.append(nodo.valor)
             self._buscar_recursivo(nodo.derecha, calificacion_minima, resultados)
-
 
     def obtener_todos_los_tutores(self):
         """Devuelve una lista de todos los tutores en el árbol (recorrido inorden)."""
@@ -265,59 +246,37 @@ class ArbolBinarioBusqueda:
     def eliminar_tutor_por_id(self, id_tutor):
         """
         Reconstruye el árbol con los tutores restantes, excluyendo el tutor con id_tutor.
-        Esta es una estrategia simple de eliminación para BSTs no auto-balanceados.
         """
-        # Obtener todos los tutores excepto el que se va a eliminar
         tutores_restantes = [t for t in self.obtener_todos_los_tutores() if t.id_usuario != id_tutor]
-        
-        # Reiniciar el árbol y reinsertar los tutores restantes
         self.raiz = None
         for tutor_obj in tutores_restantes:
             self.insertar(tutor_obj)
-        # print(f"Árbol de tutores reconstruido después de eliminar/actualizar a '{id_tutor}'.")
 
 # --- Implementación de Grafo para Asignación de Tutorías ---
 class GrafoAsignacion:
     """
     Grafo para modelar la relación entre solicitudes, tutores y horarios.
-    Los nodos pueden ser:
-    - 'solicitud_[id_estudiante]_[materia]_[fecha_hora_preferida]' (nodos de solicitud)
-    - 'tutor_[id_tutor]' (nodos de tutor)
-    - 'horario_[fecha_hora]' (nodos de horario disponible)
-
-    Las aristas representarán la compatibilidad:
-    - solicitud -> tutor (si el tutor enseña la materia)
-    - tutor -> horario (si el tutor está disponible en ese horario)
-    - solicitud -> horario (si la solicitud tiene una fecha/hora preferida)
     """
     def __init__(self):
-        self.grafo = {} # {nodo: {vecino: peso}}
+        self.grafo = {}
 
     def agregar_nodo(self, nodo):
-        """Agrega un nodo al grafo si no existe."""
         if nodo not in self.grafo:
             self.grafo[nodo] = {}
 
     def agregar_arista(self, origen, destino, peso=1):
-        """Agrega una arista dirigida entre dos nodos con un peso."""
         self.agregar_nodo(origen)
         self.agregar_nodo(destino)
         self.grafo[origen][destino] = peso
 
     def obtener_vecinos(self, nodo):
-        """Devuelve los vecinos y sus pesos para un nodo dado."""
         return self.grafo.get(nodo, {})
 
     def encontrar_camino_optimo(self, inicio, destino):
-        """
-        Implementa el algoritmo de Dijkstra para encontrar el camino más corto
-        (en este contexto, el "camino óptimo" podría ser el que tenga menos "costo" o "saltos"
-        para conectar una solicitud con un tutor y horario).
-        """
         distancias = {nodo: float('infinity') for nodo in self.grafo}
         distancias[inicio] = 0
-        cola_prioridad = [(0, inicio)] # (distancia, nodo)
-        caminos = {} # Para reconstruir el camino
+        cola_prioridad = [(0, inicio)]
+        caminos = {}
 
         while cola_prioridad:
             distancia_actual, nodo_actual = heapq.heappop(cola_prioridad)
@@ -332,14 +291,13 @@ class GrafoAsignacion:
                     heapq.heappush(cola_prioridad, (nueva_distancia, vecino))
                     caminos[vecino] = nodo_actual
         
-        # Reconstruir el camino
         ruta = []
         if destino in caminos or destino == inicio:
             actual = destino
             while actual in caminos:
                 ruta.insert(0, actual)
                 actual = caminos[actual]
-            if inicio not in ruta: # Asegurarse de que el inicio esté en la ruta si no es el destino
+            if inicio not in ruta:
                 ruta.insert(0, inicio)
             return ruta, distancias[destino]
         return None, float('infinity')
@@ -349,13 +307,9 @@ class GrafoAsignacion:
 # CLASE PRINCIPAL DEL SISTEMA
 # =========================================================
 class PlataformaTutorias:
-    """
-    Clase principal que orquesta todas las operaciones y estructuras de datos.
-    Modificada para usar un único archivo datos.json.
-    """
     def __init__(self):
         self.diccionario_estudiantes = {} 
-        self.diccionario_tutores = {}     
+        self.diccionario_tutores = {}      
         self.cola_solicitudes = Cola()
         self.arbol_tutores = ArbolBinarioBusqueda() 
         self.grafo_asignacion = GrafoAsignacion() 
@@ -368,17 +322,15 @@ class PlataformaTutorias:
 
         self._next_estudiante_id = 1
         self._next_tutor_id = 1
+        self._next_solicitud_id = 1
         self.siguiente_id_sesion = 1
 
         os.makedirs("data", exist_ok=True)
-
         self._cargar_datos() 
 
     def _cargar_datos(self):
         """Carga los datos desde los archivos JSON individuales."""
-        # print("Cargando datos...") # COMENTADO
         try:
-            # Cargar estudiantes
             if os.path.exists(self.ARCHIVO_DATOS_ESTUDIANTES):
                 with open(self.ARCHIVO_DATOS_ESTUDIANTES, 'r') as f:
                     estudiantes_data = json.load(f)
@@ -392,9 +344,7 @@ class PlataformaTutorias:
                     if estudiantes_data:
                         last_id = max([int(e["id_usuario"][1:]) for e in estudiantes_data])
                         self._next_estudiante_id = last_id + 1
-            # print("Estudiantes cargados.") # COMENTADO
 
-            # Cargar tutores
             if os.path.exists(self.ARCHIVO_DATOS_TUTORES):
                 with open(self.ARCHIVO_DATOS_TUTORES, 'r') as f:
                     tutores_data = json.load(f)
@@ -410,9 +360,7 @@ class PlataformaTutorias:
                     if tutores_data:
                         last_id = max([int(t["id_usuario"][1:]) for t in tutores_data])
                         self._next_tutor_id = last_id + 1
-            # print("Tutores cargados.") # COMENTADO
             
-            # Cargar sesiones
             if os.path.exists(self.ARCHIVO_DATOS_SESIONES):
                 with open(self.ARCHIVO_DATOS_SESIONES, 'r') as f:
                     sesiones_data = json.load(f)
@@ -426,55 +374,57 @@ class PlataformaTutorias:
                         self.historial_general_sesiones.append(sesion)
                     if sesiones_data:
                         last_id = max([int(s["id_sesion"][1:]) for s in sesiones_data])
-
-            # Cargar solicitudes (cola)
+                        self.siguiente_id_sesion = last_id + 1
+                        
             if os.path.exists(self.ARCHIVO_DATOS_SOLICITUDES):
                 with open(self.ARCHIVO_DATOS_SOLICITUDES, 'r') as f:
                     solicitudes_data = json.load(f)
-                    self.cola_solicitudes = Cola(items=solicitudes_data) 
+                    self.cola_solicitudes = Cola(items=solicitudes_data)
+                    if solicitudes_data:
+                        last_id = max([int(s["id_solicitud"][2:]) for s in solicitudes_data])
+                        self._next_solicitud_id = last_id + 1
 
-        except json.JSONDecodeError as e:
-            # print(f"Error al decodificar JSON al cargar datos: {e}. Asegúrese de que los archivos estén bien formados. Iniciando con datos vacíos.") # COMENTADO
+        except json.JSONDecodeError:
             self._reset_ids()
         except FileNotFoundError:
-            # print("Uno o más archivos de datos no encontrados. Se iniciará con datos vacíos.") # COMENTADO
             self._reset_ids()
-        except Exception as e:
-            # print(f"Un error inesperado ocurrió al cargar datos: {e}. Iniciando con datos vacíos.") # COMENTADO
+        except Exception:
             self._reset_ids()
 
     def _reset_ids(self):
         """Reinicia los contadores de ID."""
         self._next_estudiante_id = 1
         self._next_tutor_id = 1
+        self._next_solicitud_id = 1
         self.siguiente_id_sesion = 1
 
     def _guardar_datos(self):
         """Guarda todos los datos en los archivos JSON individuales."""
         try:
-            # Guardar estudiantes
             with open(self.ARCHIVO_DATOS_ESTUDIANTES, 'w') as f:
                 json.dump([est.to_dict() for est in self.diccionario_estudiantes.values()], f, indent=4)
-            print("Estudiantes guardados.")
 
-            # Guardar tutores
             with open(self.ARCHIVO_DATOS_TUTORES, 'w') as f:
                 json.dump([tut.to_dict() for tut in self.diccionario_tutores.values()], f, indent=4)
-            print("Tutores guardados.")
 
-            # Guardar sesiones
             with open(self.ARCHIVO_DATOS_SESIONES, 'w') as f:
                 json.dump([ses.to_dict() for ses in self.historial_general_sesiones], f, indent=4)
-            print("Sesiones guardadas.")
 
-            # Guardar solicitudes
             with open(self.ARCHIVO_DATOS_SOLICITUDES, 'w') as f:
-                json.dump(self.cola_solicitudes.to_list(), f, indent=4) 
-            print("Solicitudes guardadas.")
-
-            print("Datos guardados exitosamente.")
+                solicitudes_con_id = self.cola_solicitudes.to_list()
+                json.dump(solicitudes_con_id, f, indent=4)
         except Exception as e:
-            print(f"Error al guardar datos: {e}") # Mantener este print para depuración de errores de guardado
+            print(f"Error al guardar datos: {e}") 
+
+    def _buscar_usuario_por_email(self, email):
+        """Busca un usuario (estudiante o tutor) por su email."""
+        for est in self.diccionario_estudiantes.values():
+            if est.email == email:
+                return est
+        for tut in self.diccionario_tutores.values():
+            if tut.email == email:
+                return tut
+        return None
 
     def generar_id_sesion(self):
         """Genera un ID único para cada sesión de tutoría."""
@@ -485,19 +435,29 @@ class PlataformaTutorias:
     def registrar_estudiante(self, nombre, email, nivel, materias_interes):
         """
         CRUD: C (Create) - Registra un nuevo estudiante en la plataforma.
+        Añade validación de email para evitar duplicados.
         """
+        if self._buscar_usuario_por_email(email):
+            print(f"Error: Ya existe un usuario registrado con el email '{email}'.")
+            return None
+        
         id_est = f"E{self._next_estudiante_id:03d}"
         self._next_estudiante_id += 1
         estudiante = Estudiante(id_est, nombre, email, nivel, materias_interes)
         self.diccionario_estudiantes[id_est] = estudiante
         print(f"Éxito: Estudiante '{nombre}' registrado con ID: {id_est}.")
-        self._guardar_datos() 
+        self._guardar_datos()
         return id_est
 
     def registrar_tutor(self, nombre, email, especialidad, calificacion, disponibilidad):
         """
         CRUD: C (Create) - Registra un nuevo tutor en la plataforma.
+        Añade validación de email para evitar duplicados.
         """
+        if self._buscar_usuario_por_email(email):
+            print(f"Error: Ya existe un usuario registrado con el email '{email}'.")
+            return None
+
         id_tutor = f"T{self._next_tutor_id:03d}"
         self._next_tutor_id += 1
         tutor = Tutor(id_tutor, nombre, email, especialidad, calificacion, disponibilidad)
@@ -522,7 +482,7 @@ class PlataformaTutorias:
             if usuario.tipo_usuario == "Estudiante":
                 print(f"Nivel Académico: {usuario.nivel_academico}")
                 print(f"Materias de Interés: {', '.join(usuario.materias_interes)}")
-            else: # Es Tutor
+            else:
                 print(f"Materias de Especialidad: {', '.join(usuario.materias_especialidad)}")
                 print(f"Calificación Promedio: {usuario.calificacion_promedio:.1f}")
                 print("Disponibilidad:")
@@ -545,6 +505,10 @@ class PlataformaTutorias:
         estudiante = self.diccionario_estudiantes.get(id_estudiante)
         if not estudiante:
             print(f"Error: Estudiante con ID '{id_estudiante}' no encontrado para actualizar.")
+            return False
+
+        if nuevo_email and nuevo_email != estudiante.email and self._buscar_usuario_por_email(nuevo_email):
+            print(f"Error: El email '{nuevo_email}' ya está en uso por otro usuario.")
             return False
 
         cambios = False
@@ -576,6 +540,10 @@ class PlataformaTutorias:
         tutor = self.diccionario_tutores.get(id_tutor)
         if not tutor:
             print(f"Error: Tutor con ID '{id_tutor}' no encontrado para actualizar.")
+            return False
+
+        if nuevo_email and nuevo_email != tutor.email and self._buscar_usuario_por_email(nuevo_email):
+            print(f"Error: El email '{nuevo_email}' ya está en uso por otro usuario.")
             return False
 
         cambios = False
@@ -621,7 +589,6 @@ class PlataformaTutorias:
             print(f"Error: Estudiante con ID '{id_estudiante}' no encontrado para eliminar.")
             return False
 
-        # 1. Eliminar de la cola de solicitudes pendientes
         nueva_cola_solicitudes_items = []
         solicitudes_eliminadas_count = 0
         while not self.cola_solicitudes.esta_vacia():
@@ -634,7 +601,6 @@ class PlataformaTutorias:
         if solicitudes_eliminadas_count > 0:
             print(f"     {solicitudes_eliminadas_count} solicitudes pendientes del estudiante '{id_estudiante}' eliminadas de la cola.")
 
-        # 2. Eliminar sesiones del historial general (sesiones donde el estudiante es el solicitante)
         sesiones_eliminadas_count = 0
         sesiones_a_mantener = []
         for sesion in self.historial_general_sesiones:
@@ -646,7 +612,6 @@ class PlataformaTutorias:
         if sesiones_eliminadas_count > 0:
             print(f"     {sesiones_eliminadas_count} sesiones de tutoría asociadas al estudiante '{id_estudiante}' eliminadas del historial general.")
         
-        # 3. Finalmente, eliminar al estudiante del diccionario
         del self.diccionario_estudiantes[id_estudiante]
         print(f"Éxito: Estudiante '{id_estudiante}' eliminado completamente del sistema.")
         self._guardar_datos() 
@@ -661,7 +626,6 @@ class PlataformaTutorias:
             print(f"Error: Tutor con ID '{id_tutor}' no encontrado para eliminar.")
             return False
 
-        # 1. Eliminar sesiones del historial general (sesiones donde el tutor es el asignado)
         sesiones_eliminadas_count = 0
         sesiones_a_mantener = []
         for sesion in self.historial_general_sesiones:
@@ -673,10 +637,8 @@ class PlataformaTutorias:
         if sesiones_eliminadas_count > 0:
             print(f"     {sesiones_eliminadas_count} sesiones de tutoría asociadas al tutor '{id_tutor}' eliminadas del historial general.")
         
-        # 2. Eliminar del Árbol Binario de Búsqueda
         self.arbol_tutores.eliminar_tutor_por_id(id_tutor)
         
-        # 3. Finalmente, eliminar al tutor del diccionario
         del self.diccionario_tutores[id_tutor]
         print(f"Éxito: Tutor '{id_tutor}' eliminado completamente del sistema.")
         self._guardar_datos() 
@@ -685,14 +647,18 @@ class PlataformaTutorias:
     def solicitar_tutoria(self, id_estudiante, materia, fecha_hora_preferida=None):
         """
         Un estudiante envía una solicitud de tutoría, que se encola.
-        Se eliminó la verificación de 'materias_disponibles' estática.
+        Implementa ID de solicitud y validación para no duplicar.
         """
         estudiante = self.diccionario_estudiantes.get(id_estudiante)
         if not estudiante:
             print(f"Error: Estudiante con ID '{id_estudiante}' no registrado.")
             return
 
-        # VERIFICACIÓN DINÁMICA: Verificar si hay AL MENOS UN tutor con esa materia de especialidad
+        for solicitud_existente in self.cola_solicitudes.items:
+            if solicitud_existente.get('id_estudiante') == id_estudiante and solicitud_existente.get('materia') == materia:
+                print("Error: El estudiante ya tiene una solicitud pendiente para esta materia.")
+                return
+
         tutores_con_materia = [
             tutor for tutor in self.diccionario_tutores.values() 
             if materia in tutor.materias_especialidad
@@ -701,7 +667,6 @@ class PlataformaTutorias:
             print(f"Error: No hay tutores registrados con especialidad en '{materia}'.")
             return
 
-        # Verificar si la fecha_hora_preferida es válida si se proporciona
         if fecha_hora_preferida:
             try:
                 datetime.strptime(fecha_hora_preferida, "%Y-%m-%d %H:%M")
@@ -709,14 +674,24 @@ class PlataformaTutorias:
                 print("Error: Formato de fecha y hora preferida inválido. Use YYYY-MM-DD HH:MM.")
                 return
 
-        solicitud = estudiante.solicitar_tutoria(materia, fecha_hora_preferida)
-        self.cola_solicitudes.encolar(solicitud)
-        print(f"Éxito: Solicitud de tutoría para '{materia}' de '{estudiante.nombre}' encolada.")
-        self._guardar_datos() 
+        id_solicitud = f"RQ{self._next_solicitud_id:03d}"
+        self._next_solicitud_id += 1
+
+        solicitud = {
+            "id_solicitud": id_solicitud,
+            "id_estudiante": id_estudiante,
+            "materia": materia,
+            "fecha_hora_preferida": fecha_hora_preferida
+        }
         
+        self.cola_solicitudes.encolar(solicitud)
+        print(f"Éxito: Solicitud '{id_solicitud}' para '{estudiante.nombre}' encolada.")
+        self._guardar_datos() 
+
     def listar_solicitudes_pendientes(self):
         """
         Muestra todas las solicitudes de tutoría que están actualmente en la cola.
+        Ahora incluye el ID de la solicitud.
         """
         if self.cola_solicitudes.esta_vacia():
             print("\nNo hay solicitudes de tutoría pendientes en la cola.")
@@ -727,9 +702,8 @@ class PlataformaTutorias:
             estudiante = self.diccionario_estudiantes.get(solicitud['id_estudiante'])
             nombre_estudiante = estudiante.nombre if estudiante else "Desconocido"
             fecha_hora_pref = solicitud['fecha_hora_preferida'] if solicitud['fecha_hora_preferida'] else "Sin preferencia"
-            print(f"{i+1}. Estudiante: {nombre_estudiante} (ID: {solicitud['id_estudiante']}) | "
-                  f"Materia: {solicitud['materia']} | Fecha/Hora Preferida: {fecha_hora_pref}")
-
+            print(f"{i+1}. ID: {solicitud['id_solicitud']} | Estudiante: {nombre_estudiante} (ID: {solicitud['id_estudiante']}) | "
+                    f"Materia: {solicitud['materia']} | Fecha/Hora Preferida: {fecha_hora_pref}")
 
     def asignar_tutoria_a_solicitud(self):
         """
@@ -740,7 +714,8 @@ class PlataformaTutorias:
             return
 
         solicitud = self.cola_solicitudes.desencolar()
-        print(f"\nProcesando solicitud de: {solicitud['id_estudiante']} para materia: {solicitud['materia']}...")
+        id_solicitud = solicitud.get('id_solicitud', 'N/A')
+        print(f"\nProcesando solicitud {id_solicitud} de: {solicitud['id_estudiante']} para materia: {solicitud['materia']}...")
 
         estudiante = self.diccionario_estudiantes.get(solicitud["id_estudiante"])
         if not estudiante:
@@ -753,7 +728,7 @@ class PlataformaTutorias:
 
         self.grafo_asignacion = GrafoAsignacion() 
 
-        solicitud_node_id = f"solicitud_{solicitud['id_estudiante']}_{materia_solicitada}_{fecha_hora_pref if fecha_hora_pref else 'any'}"
+        solicitud_node_id = f"solicitud_{id_solicitud}"
         self.grafo_asignacion.agregar_nodo(solicitud_node_id)
 
         tutores_candidatos = self.arbol_tutores.buscar_tutor_por_calificacion(3.0) 
@@ -788,7 +763,7 @@ class PlataformaTutorias:
 
         if not tutor_encontrado or not hora_asignada:
             print(f"Error: No se encontraron tutores disponibles para '{materia_solicitada}' en este momento o en la hora preferida.")
-            self.cola_solicitudes.encolar(solicitud) # Re-encolar para no perderla
+            self.cola_solicitudes.encolar(solicitud)
             print("Solicitud re-encolada. Intente de nuevo más tarde o registre más tutores/disponibilidad.")
             self._guardar_datos()
             return

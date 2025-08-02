@@ -1,1 +1,89 @@
-[]
+[
+    {
+        "id_usuario": "T001",
+        "nombre": "Oscar Pineda",
+        "email": "oscarpineda@unah.hn",
+        "tipo_usuario": "Tutor",
+        "materias_especialidad": [
+            "Informatica",
+            "Fisica",
+            "Matematicas"
+        ],
+        "calificacion_promedio": 4.0,
+        "disponibilidad": {
+            "2025-08-01 08:00": "ocupado",
+            "2025-08-01 11:00": "ocupado",
+            "2025-08-04 11:00": "libre"
+        },
+        "historial_tutorias": [
+            {
+                "id_sesion": "S001",
+                "id_estudiante": "E001",
+                "id_tutor": "T001",
+                "materia": "Informatica",
+                "fecha_hora": "2025-08-01 08:00",
+                "estado": "Completada",
+                "calificacion_dada": 4
+            },
+            {
+                "id_sesion": "S003",
+                "id_estudiante": "E003",
+                "id_tutor": "T001",
+                "materia": "Matematicas",
+                "fecha_hora": "2025-08-01 11:00",
+                "estado": "Completada",
+                "calificacion_dada": 4
+            }
+        ]
+    },
+    {
+        "id_usuario": "T002",
+        "nombre": "Wilson Villanueva",
+        "email": "wilsonvillanew@unah.hn",
+        "tipo_usuario": "Tutor",
+        "materias_especialidad": [
+            "Matematicas",
+            "Informatica"
+        ],
+        "calificacion_promedio": 5.0,
+        "disponibilidad": {
+            "2025-08-02 08:00": "ocupado"
+        },
+        "historial_tutorias": [
+            {
+                "id_sesion": "S004",
+                "id_estudiante": "E001",
+                "id_tutor": "T002",
+                "materia": "Matematicas",
+                "fecha_hora": "2025-08-02 08:00",
+                "estado": "Completada",
+                "calificacion_dada": 5
+            }
+        ]
+    },
+    {
+        "id_usuario": "T003",
+        "nombre": "Victor Reyes",
+        "email": "victorreyes@unah,hn",
+        "tipo_usuario": "Tutor",
+        "materias_especialidad": [
+            "Historia",
+            "Ingles"
+        ],
+        "calificacion_promedio": 5.0,
+        "disponibilidad": {
+            "2025-08-02 10:00": "ocupado"
+        },
+        "historial_tutorias": [
+            {
+                "id_sesion": "S002",
+                "id_estudiante": "E002",
+                "id_tutor": "T003",
+                "materia": "Historia",
+                "fecha_hora": "2025-08-02 10:00",
+                "estado": "Completada",
+                "calificacion_dada": 5
+            }
+        ]
+    }
+]
