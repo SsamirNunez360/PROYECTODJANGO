@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime
-import heapq #Importación para Gráfos, nuevo
+import heapq #Importación para Gráfos
 
 # =========================================================
 # CLASES DE ENTIDADES Y ESTRUCTURAS DE DATOS BASE
@@ -376,7 +376,7 @@ class PlataformaTutorias:
 
     def _cargar_datos(self):
         """Carga los datos desde los archivos JSON individuales."""
-        # print("Cargando datos...") # COMENTADO
+        # print("Cargando datos...")
         try:
             # Cargar estudiantes
             if os.path.exists(self.ARCHIVO_DATOS_ESTUDIANTES):
@@ -392,7 +392,7 @@ class PlataformaTutorias:
                     if estudiantes_data:
                         last_id = max([int(e["id_usuario"][1:]) for e in estudiantes_data])
                         self._next_estudiante_id = last_id + 1
-            # print("Estudiantes cargados.") # COMENTADO
+            # print("Estudiantes cargados.")
 
             # Cargar tutores
             if os.path.exists(self.ARCHIVO_DATOS_TUTORES):
@@ -410,7 +410,7 @@ class PlataformaTutorias:
                     if tutores_data:
                         last_id = max([int(t["id_usuario"][1:]) for t in tutores_data])
                         self._next_tutor_id = last_id + 1
-            # print("Tutores cargados.") # COMENTADO
+            # print("Tutores cargados.")
             
             # Cargar sesiones
             if os.path.exists(self.ARCHIVO_DATOS_SESIONES):
@@ -434,13 +434,13 @@ class PlataformaTutorias:
                     self.cola_solicitudes = Cola(items=solicitudes_data) 
 
         except json.JSONDecodeError as e:
-            # print(f"Error al decodificar JSON al cargar datos: {e}. Asegúrese de que los archivos estén bien formados. Iniciando con datos vacíos.") # COMENTADO
+            # print(f"Error al decodificar JSON al cargar datos: {e}. Asegúrese de que los archivos estén bien formados. Iniciando con datos vacíos.")
             self._reset_ids()
         except FileNotFoundError:
-            # print("Uno o más archivos de datos no encontrados. Se iniciará con datos vacíos.") # COMENTADO
+            # print("Uno o más archivos de datos no encontrados. Se iniciará con datos vacíos.")
             self._reset_ids()
         except Exception as e:
-            # print(f"Un error inesperado ocurrió al cargar datos: {e}. Iniciando con datos vacíos.") # COMENTADO
+            # print(f"Un error inesperado ocurrió al cargar datos: {e}. Iniciando con datos vacíos.")
             self._reset_ids()
 
     def _reset_ids(self):
