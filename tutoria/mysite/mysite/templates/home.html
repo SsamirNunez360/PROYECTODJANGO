@@ -72,7 +72,8 @@
       margin-bottom:20px;
     }
     .hero img{
-      max-width: 250px;
+      max-width: 100%;
+      height: auto;
     }
     .form-control{
       border-radius:10px;
@@ -144,73 +145,75 @@
           <h1>Encuentra y reserva un tutor</h1>
           <p>Busca tutores calificados y programa sesiones personalizadas</p>
 
-          <div class="row g-2">
-            <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="Asignatura">
+          <form class="row g-2" method="GET" action="/tutores_perfil">
+            <div class="col-md-12">
+              <input type="text" class="form-control" name="subject" placeholder="Asignatura">
             </div>
-            <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="Nivel">
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="level" placeholder="Nivel">
             </div>
-            <div class="col-md-4">
-              <input type="text" class="form-control" placeholder="dd/mm/aaaa">
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="date" placeholder="dd/mm/aaaa">
             </div>
-          </div>
-          <div class="mt-3">
-            <button class="btn-search">Buscar</button>
-          </div>
+            <div class="col-md-12 mt-2">
+              <button type="submit" class="btn-search">Buscar</button>
+            </div>
+          </form>
         </div>
-
-        <div class="col-md-6 text-center mt-4 mt-md-0">
-          <img src="https://cdn3d.iconscout.com/3d/premium/thumb/tutor-en-linea-14652958-11785865.png?f=webp" alt="Tutor">
+        
+        <div class="col-md-6 text-center">
+          <img src="https://cdn3d.iconscout.com/3d/premium/thumb/tutor-en-linea-14652958-11785865.png?f=webp" alt="Tutor" class="img-fluid">
         </div>
       </div>
     </div>
   </div>
 
   <!-- Subjects con imágenes -->
-<div class="container">
-  <div class="subjects-section">
-    <h2>Asignaturas más populares</h2>
-    <div class="row g-3">
-      <div class="col-6 col-md-3">
-        <div class="subject-card" data-subject="Matematicas" style="cursor:pointer;">
-          <img src="https://www.cetys.mx/noticias/wp-content/uploads/2017/07/Portada_Mate.jpg" alt="matematicas">
-          <p>Matemáticas</p>
+  <div class="container">
+    <div class="subjects-section">
+      <h2>Asignaturas más populares</h2>
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="subject-card" data-subject="Matematicas">
+            <img src="https://www.cetys.mx/noticias/wp-content/uploads/2017/07/Portada_Mate.jpg" alt="matematicas">
+            <p>Matemáticas</p>
+          </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="subject-card" data-subject="Ingles" style="cursor:pointer;">
-          <img src="https://youtalkonline.com/wp-content/uploads/ingl%C3%A9s-en-casa.jpg" alt="ingles">
-          <p>Inglés</p>
+        <div class="col-6 col-md-3">
+          <div class="subject-card" data-subject="Ingles">
+            <img src="https://youtalkonline.com/wp-content/uploads/ingl%C3%A9s-en-casa.jpg" alt="ingles">
+            <p>Inglés</p>
+          </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="subject-card" data-subject="Ciencias" style="cursor:pointer;">
-          <img src="https://www.magisnet.com/wp-content/uploads/2020/01/ensen%CC%83ar-ciencias.jpg" alt="ciencias">
-          <p>Ciencias</p>
+        <div class="col-6 col-md-3">
+          <div class="subject-card" data-subject="Ciencias">
+            <img src="https://www.magisnet.com/wp-content/uploads/2020/01/ensen%CC%83ar-ciencias.jpg" alt="ciencias">
+            <p>Ciencias</p>
+          </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="subject-card" data-subject="Historia" style="cursor:pointer;">
-          <img src="https://pymstatic.com/16187/conversions/edades-de-la-historia-social.jpg" alt="historia">
-          <p>Historia</p>
+        <div class="col-6 col-md-3">
+          <div class="subject-card" data-subject="Historia">
+            <img src="https://pymstatic.com/16187/conversions/edades-de-la-historia-social.jpg" alt="historia">
+            <p>Historia</p>
+          </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="subject-card" data-subject="informatica" style="cursor:pointer;">
-          <img src="https://saluddata.com/wp-content/uploads/2023/11/que-es-la-informatica.webp" alt="Informatica">
-          <p>Informática</p>
+        <div class="col-6 col-md-3">
+          <div class="subject-card" data-subject="informatica">
+            <img src="https://saluddata.com/wp-content/uploads/2023/11/que-es-la-informatica.webp" alt="Informatica">
+            <p>Informática</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  document.querySelectorAll('.subject-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const subject = card.getAttribute('data-subject');
-      window.location.href = `/tutores_perfil?subject=${encodeURIComponent(subject)}`;
+  <script>
+    document.querySelectorAll('.subject-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const subject = card.getAttribute('data-subject');
+        window.location.href = `/tutores_perfil?subject=${encodeURIComponent(subject)}`;
+      });
     });
-  });
-</script>
+  </script>
+</body>
+</html>
