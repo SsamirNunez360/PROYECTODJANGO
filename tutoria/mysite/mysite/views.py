@@ -271,6 +271,6 @@ def historial_sesiones(request):
     return render(request, 'historial_sesiones.html')
 
 def salir(request):
-    return redirect('/')  # Redirige a inicio o login
+    return redirect('/')
 
 ########
