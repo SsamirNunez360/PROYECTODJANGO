@@ -58,31 +58,39 @@ def login_view(request):
 
 
 def registrar_estudiante(request):
-    """
-    Maneja el registro de un nuevo estudiante.
-    """
     if request.method == 'POST':
-        # --- Esto es lo que reemplaza a `input()` ---
-        # Accede a los datos del formulario usando request.POST
         nombre = request.POST.get('nombre')
         email = request.POST.get('email')
         nivel = request.POST.get('nivel_academico')
-        materias_interes_str = request.POST.get('materias_interes')
-        
-        # --- Esto es lo que reemplaza a `split(',')` ---
-        # Procesa la cadena de materias en una lista
-        materias_interes = [m.strip() for m in materias_interes_str.split(',')]
-        
-        # --- Esto reemplaza a `plataforma.registrar_estudiante()` ---
-        # Llama a tu función para registrar al estudiante
-        # Asegúrate de tener una instancia de tu clase `Plataforma` o un método estático
-        # plataforma.registrar_estudiante(nombre, email, nivel, materias_interes)
-        
-        # Redirige a una página de éxito o a la página principal después del registro
-        # Reemplaza 'home' con el nombre de la URL a la que quieras redirigir
-        return redirect(reverse('home')) 
-    
-    # Si la solicitud es GET, simplemente renderiza el formulario vacío
+        materias = request.POST.getlist('materias_interes')  # Asegúrate que en HTML uses name="materias_interes"
+
+        # Cargar el archivo existente
+        ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
+        try:
+            with open(ruta_archivo, 'r', encoding='utf-8') as f:
+                estudiantes_data = json.load(f)
+        except FileNotFoundError:
+            estudiantes_data = []
+
+        # Generar nuevo ID automático
+        nuevo_id = f"E{len(estudiantes_data)+1:03d}"
+
+        # Crear objeto Estudiante
+        nuevo_estudiante = Estudiante(
+            id_usuario=nuevo_id,
+            nombre=nombre,
+            email=email,
+            nivel_academico=nivel,
+            materias_interes=materias
+        )
+
+        # Agregar y guardar en JSON
+        estudiantes_data.append(nuevo_estudiante.to_dict())
+        with open(ruta_archivo, 'w', encoding='utf-8') as f:
+            json.dump(estudiantes_data, f, indent=4, ensure_ascii=False)
+
+        return redirect('estudiantes_perfil')  # Ajusta según la URL que tengas
+
     return render(request, 'registrar_estudiante.html')
 
 

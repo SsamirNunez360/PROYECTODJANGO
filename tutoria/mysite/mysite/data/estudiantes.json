@@ -56,8 +56,8 @@
     },
     {
         "id_usuario": "E003",
-        "nombre": "Ssamir Nu\u00f1ez",
-        "email": "ssamirnu\u00f1ez@unah.hn",
+        "nombre": "Ssamir Nuñez",
+        "email": "ssamirnuñez@unah.hn",
         "tipo_usuario": "Estudiante",
         "nivel_academico": "Bachillerato",
         "materias_interes": [
@@ -76,5 +76,17 @@
                 "calificacion_dada": 4
             }
         ]
+    },
+    {
+        "id_usuario": "E004",
+        "nombre": "Osmer Anariba",
+        "email": "osmera@unah.hn",
+        "tipo_usuario": "Estudiante",
+        "nivel_academico": "Universitario",
+        "materias_interes": [
+            "Matematicas", 
+            "Algoritmos"
+        ],
+        "historial_tutorias": []
     }
 ]
