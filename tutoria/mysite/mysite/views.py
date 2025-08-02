@@ -2,6 +2,7 @@
 
 import os
 import json
+import re
 import unicodedata
 from django.urls import reverse
 from django.conf import settings
@@ -119,6 +120,33 @@ def tutores_perfil(request):
         tutores_filtrados = tutores
 
     return render(request, 'tutores_perfil.html', {'tutores': tutores_filtrados, 'subject': subject})
+
+def estudiantes_perfil(request):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
+
+    subject = request.GET.get('subject', '').strip()
+    normalized_subject = normalize(subject)
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
+            estudiantes = json.load(archivo)
+    except FileNotFoundError:
+        estudiantes = []
+
+    # Filtrar estudiantes que tengan la materia (normalizada) en materias_interes
+    if normalized_subject:
+        estudiantes_filtrados = []
+        for estudiante in estudiantes:
+            materias_norm = [normalize(m) for m in estudiante.get('materias_interes', [])]
+            if normalized_subject in materias_norm:
+                estudiantes_filtrados.append(estudiante)
+    else:
+        estudiantes_filtrados = estudiantes
+
+    return render(request, 'estudiantes_perfil.html', {
+        'estudiantes': estudiantes_filtrados,
+        'subject': subject
+    })
 
 
 # Ejemplo de vista de login
