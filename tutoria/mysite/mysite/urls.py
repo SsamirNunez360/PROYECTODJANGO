@@ -12,4 +12,5 @@ urlpatterns = [
     path('estudiantes_perfil/', views.estudiantes_perfil, name='estudiantes_perfil'),
     path('registrar_estudiante/', views.registrar_estudiante, name='registrar_estudiante'),
     path('listar_estudiante/', views.listar_estudiante, name='listar_estudiante'),
+    path('solicitud_tutoria/', views.solicitar_tutoria, name='solicitud_tutoria'),
 ]

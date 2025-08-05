@@ -8,8 +8,10 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+from django.utils.timezone import now
+from pathlib import Path
 
 
 from .clases import (
@@ -88,6 +90,42 @@ def registrar_estudiante(request):
         return redirect('estudiantes_perfil')
 
     return render(request, 'registrar_estudiante.html')
+
+
+
+
+
+def solicitar_tutoria(request):
+    if request.method == 'POST':
+        # Ruta exacta corregida (tutoria/mysite/mysite/data/)
+        DATA_DIR = Path(settings.BASE_DIR) / 'mysite' / 'data'  # ¡Ajustado!
+        DATA_DIR.mkdir(exist_ok=True)  # Crea solo si no existe
+
+        archivo_json = DATA_DIR / 'solicitudes.json'
+
+        # Obtener datos del formulario
+        nueva_solicitud = {
+            "id_estudiante": request.POST.get('id_estudiante'),
+            "materia": request.POST.get('materia'),
+            "fecha_hora_preferida": request.POST.get('fecha_hora_preferida')
+        }
+
+        # Cargar datos existentes o lista vacía
+        try:
+            with open(archivo_json, 'r', encoding='utf-8') as f:
+                solicitudes = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            solicitudes = []
+
+        # Guardar la nueva solicitud
+        solicitudes.append(nueva_solicitud)
+        
+        with open(archivo_json, 'w', encoding='utf-8') as f:
+            json.dump(solicitudes, f, indent=4, ensure_ascii=False)
+
+        return redirect('home')  # Cambia 'home' si usas otra vista
+
+    return render(request, 'solicitud_tutoria.html')
 
 
 def home(request):
@@ -248,11 +286,13 @@ def actualizar_usuario(request):
 def eliminar_usuario(request):
     return render(request, 'eliminar_usuario.html')
 
+'''
 def solicitar_tutoria(request):
-    return render(request, 'solicitar_tutoria.html')
+    return render(request, 'solicitud_tutoria.html')
 
 def listar_solicitudes(request):
     return render(request, 'listar_solicitudes.html')
+'''
 
 def asignar_tutoria(request):
     return render(request, 'asignar_tutoria.html')
