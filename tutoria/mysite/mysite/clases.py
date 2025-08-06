@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 import heapq #Importación para Gráfos
+from django.conf import settings
 
 # =========================================================
 # CLASES DE ENTIDADES Y ESTRUCTURAS DE DATOS BASE
@@ -612,6 +613,18 @@ class PlataformaTutorias:
         else:
             print("No se proporcionaron nuevos datos para actualizar al tutor.")
             return False
+
+
+    def iniciar_sesion(self, email, password):
+        ruta_usuarios = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'usuarios.json')
+        with open(ruta_usuarios, 'r', encoding='utf-8') as f:
+            usuarios = json.load(f)
+
+        for usuario in usuarios:
+            if usuario['email'] == email and usuario['password'] == password:
+                return usuario  # Puedes devolver el usuario completo si quieres
+        return None
+
 
     def eliminar_estudiante(self, id_estudiante):
         """

@@ -3,12 +3,14 @@
         "email": "admin@outlook.com",
         "password": "admin123",
         "nombre": "admin",
-        "apellido": "Fix"
+        "apellido": "Fix",
+        "tipo": "administrador"
     },
     {
         "email": "ssamirnunez@outlook.com",
         "password": "admin123",
         "nombre": "Ssamir",
-        "apellido": "Nunez"
+        "apellido": "Nunez",
+        "tipo": "administrador"
     }
 ]
