@@ -12,6 +12,11 @@
     {
         "id_estudiante": "E005",
         "materia": "Matematicas",
-        "fecha_hora_preferida": "2025-10-10T10:00"
+        "fecha_hora_preferida": "2025-10-10 10:00"
+    },
+    {
+        "id_estudiante": "E003",
+        "materia": "Ingles",
+        "fecha_hora_preferida": "2025-08-28 14:00"
     }
 ]

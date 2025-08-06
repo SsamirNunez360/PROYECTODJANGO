@@ -92,22 +92,19 @@ def registrar_estudiante(request):
     return render(request, 'registrar_estudiante.html')
 
 
-
-
-
 def solicitar_tutoria(request):
     if request.method == 'POST':
         # Ruta exacta corregida (tutoria/mysite/mysite/data/)
-        DATA_DIR = Path(settings.BASE_DIR) / 'mysite' / 'data'  # ¡Ajustado!
+        DATA_DIR = Path(settings.BASE_DIR) / 'mysite' / 'data'
         DATA_DIR.mkdir(exist_ok=True)  # Crea solo si no existe
 
         archivo_json = DATA_DIR / 'solicitudes.json'
 
-        # Obtener datos del formulario
+        # Obtener datos del formulario y reemplazar la "T"
         nueva_solicitud = {
             "id_estudiante": request.POST.get('id_estudiante'),
             "materia": request.POST.get('materia'),
-            "fecha_hora_preferida": request.POST.get('fecha_hora_preferida')
+            "fecha_hora_preferida": request.POST.get('fecha_hora_preferida').replace('T', ' ')
         }
 
         # Cargar datos existentes o lista vacía
