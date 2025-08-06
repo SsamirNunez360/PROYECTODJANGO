@@ -128,6 +128,21 @@ def solicitar_tutoria(request):
     return render(request, 'solicitud_tutoria.html')
 
 
+def listar_solicitudes(request):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'solicitudes.json')
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
+            solicitudes = json.load(archivo)
+    except FileNotFoundError:
+        solicitudes = []
+    except json.JSONDecodeError:
+        solicitudes = []
+
+    return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
+
+
+
 def home(request):
     return render(request,"home.html")
 
