@@ -98,6 +98,16 @@
       color: var(--muted);
       margin-top: 50px;
     }
+
+    .estado-libre {
+      color: #16a34a; /* verde */
+      font-weight: 600;
+    }
+
+    .estado-ocupado {
+      color: #dc2626; /* rojo */
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -133,7 +143,14 @@
       <p><strong>Disponibilidad:</strong></p>
       <ul>
         {% for fecha, estado in tutor.disponibilidad.items %}
-          <li>{{ fecha }}: {{ estado }}</li>
+          <li>
+            {{ fecha }}:
+            {% if estado|lower == 'libre' %}
+              <span class="badge bg-success text-light px-2 py-1 rounded">{{ estado }}</span>
+            {% else %}
+              <span class="badge bg-danger text-light px-2 py-1 rounded">{{ estado }}</span>
+            {% endif %}
+          </li>
         {% endfor %}
       </ul>
 
