@@ -108,6 +108,39 @@
       color: #dc2626; /* rojo */
       font-weight: 600;
     }
+
+    /* Botones editar y eliminar */
+    .btn-group-tutor {
+      margin-top: 15px;
+    }
+    .btn-editar {
+      background-color: #facc15; /* amarillo */
+      border: none;
+      color: #1f2937;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 8px;
+      margin-right: 10px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-editar:hover {
+      background-color: #eab308;
+      color: #fff;
+    }
+    .btn-eliminar {
+      background-color: #dc2626; /* rojo */
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-eliminar:hover {
+      background-color: #b91c1c;
+    }
   </style>
 </head>
 <body>
@@ -162,6 +195,13 @@
           </li>
         {% endfor %}
       </ul>
+
+      <!-- Botones Editar y Eliminar -->
+      <div class="btn-group-tutor">
+        <a href="{% url 'editar_tutor' tutor.id_usuario %}" class="btn-editar">Editar</a>
+        <a href="{% url 'eliminar_tutor' tutor.id_usuario %}" class="btn-eliminar"
+           onclick="return confirm('¿Seguro que quieres eliminar este tutor?');">Eliminar</a>
+      </div>
     </div>
     {% empty %}
     <p class="no-tutors">No se encontró ningún tutor.</p>

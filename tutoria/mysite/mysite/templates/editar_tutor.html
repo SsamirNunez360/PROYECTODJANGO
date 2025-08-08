@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Tutor - TutorIA Connect Pro</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --gray-light: #f9fafb;
+            --text-dark: #1f2937;
+            --muted: #6b7280;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #facc15;
+        }
+        body {
+            background: var(--gray-light);
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        /* Navbar */
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 10px 20px;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .navbar a {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-left: 15px;
+            text-decoration: none;
+        }
+        .btn-signup {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border: none;
+            color: #fff !important;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        /* Contenedor principal */
+        .container-main {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+        h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .card-form {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        /* Formularios */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            color: var(--text-dark);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        .btn-primary-form {
+            background: var(--primary);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+        }
+        .btn-primary-form:hover {
+            background: var(--primary-light);
+        }
+        .btn-secondary-form {
+            background-color: #e5e7eb;
+            color: var(--text-dark);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .btn-secondary-form:hover {
+            background-color: #d1d5db;
+            color: var(--text-dark);
+        }
+        /* Estilos para lista de materias/disponibilidad */
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        .list-group-item .btn-remove {
+            background-color: var(--danger);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        #add-materia-btn, #add-disponibilidad-btn {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .form-inline {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
+        <div>
+            <a href="/home">Inicio</a>
+            <a href="/" class="btn-signup">Cerrar sesión</a>
+        </div>
+    </nav>
+
+    <div class="container-main">
+        <h1>Editar perfil de {{ tutor.nombre }}</h1>
+
+        <div class="card-form">
+            <form action="{% url 'editar_tutor' tutor.id_usuario %}" method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ tutor.nombre }}" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="id_email" name="email" value="{{ tutor.email }}" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_calificacion" class="form-label">Calificación Promedio:</label>
+                    <input type="number" step="0.1" class="form-control" id="id_calificacion" name="calificacion_promedio" value="{{ tutor.calificacion_promedio }}" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Materias de Especialidad:</label>
+                    <div id="materias-container" class="list-group">
+                        {% for materia in tutor.materias_especialidad %}
+                            <div class="list-group-item">
+                                <span>{{ materia }}</span>
+                                <input type="hidden" name="materias" value="{{ materia }}" />
+                                <button type="button" class="btn-remove">&times;</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-inline mt-2">
+                        <input type="text" id="new-materia" class="form-control" placeholder="Nueva materia" />
+                        <button type="button" id="add-materia-btn">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Disponibilidad:</label>
+                    <div id="disponibilidad-container" class="list-group">
+                        {% for fecha, estado in tutor.disponibilidad.items %}
+                            <div class="list-group-item">
+                                <span>{{ fecha }}: {{ estado }}</span>
+                                <input type="hidden" name="disponibilidad_fecha" value="{{ fecha }}" />
+                                <input type="hidden" name="disponibilidad_estado" value="{{ estado }}" />
+                                <button type="button" class="btn-remove">&times;</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-inline mt-2">
+                        <input type="text" id="new-fecha" class="form-control" placeholder="Fecha (Ej: Lunes)" />
+                        <select id="new-estado" class="form-select">
+                            <option value="Libre">Libre</option>
+                            <option value="Ocupado">Ocupado</option>
+                        </select>
+                        <button type="button" id="add-disponibilidad-btn">Agregar</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary-form">Guardar Cambios</button>
+                <a href="/tutores" class="btn-secondary-form">Cancelar</a>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica para agregar/eliminar materias
+            const addMateriaBtn = document.getElementById('add-materia-btn');
+            const newMateriaInput = document.getElementById('new-materia');
+            const materiasContainer = document.getElementById('materias-container');
+
+            addMateriaBtn.addEventListener('click', () => {
+                const materia = newMateriaInput.value.trim();
+                if (materia) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'list-group-item';
+                    newItem.innerHTML = `
+                        <span>${materia}</span>
+                        <input type="hidden" name="materias" value="${materia}" />
+                        <button type="button" class="btn-remove">&times;</button>
+                    `;
+                    materiasContainer.appendChild(newItem);
+                    newMateriaInput.value = '';
+                }
+            });
+
+            materiasContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-remove')) {
+                    e.target.closest('.list-group-item').remove();
+                }
+            });
+
+            // Lógica para agregar/eliminar disponibilidad
+            const addDisponibilidadBtn = document.getElementById('add-disponibilidad-btn');
+            const newFechaInput = document.getElementById('new-fecha');
+            const newEstadoSelect = document.getElementById('new-estado');
+            const disponibilidadContainer = document.getElementById('disponibilidad-container');
+
+            addDisponibilidadBtn.addEventListener('click', () => {
+                const fecha = newFechaInput.value.trim();
+                const estado = newEstadoSelect.value;
+                if (fecha) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'list-group-item';
+                    newItem.innerHTML = `
+                        <span>${fecha}: ${estado}</span>
+                        <input type="hidden" name="disponibilidad_fecha" value="${fecha}" />
+                        <input type="hidden" name="disponibilidad_estado" value="${estado}" />
+                        <button type="button" class="btn-remove">&times;</button>
+                    `;
+                    disponibilidadContainer.appendChild(newItem);
+                    newFechaInput.value = '';
+                }
+            });
+
+            disponibilidadContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-remove')) {
+                    e.target.closest('.list-group-item').remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

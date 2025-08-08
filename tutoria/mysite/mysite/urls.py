@@ -22,4 +22,15 @@ urlpatterns = [
     
     # URL para asignar tutorías automáticamente (si aún no la tienes)
     path('asignar_tutoria/', views.asignar_tutoria, name='asignar_tutoria'),
+    
+    path('solicitudes/', views.listar_solicitudes, name='listar_solicitudes'),
+    path('asignar-tutoria-manual/', views.asignar_tutoria_manual, name='asignar_tutoria_manual'),
+    path('asignar_tutorias_automaticamente/', views.asignar_tutorias_automaticamente, name='asignar_tutorias_automaticamente'),
+    
+    path('editar_estudiante/<str:id_estudiante>/', views.editar_estudiante, name='editar_estudiante'),
+    path('eliminar_estudiante/<str:id_estudiante>/', views.eliminar_estudiante, name='eliminar_estudiante'),
+
+    path('editar_tutor/<str:id_tutor>/', views.editar_tutor, name='editar_tutor'),
+    path('eliminar_tutor/<str:id_tutor>/', views.eliminar_tutor, name='eliminar_tutor'),
+
 ]

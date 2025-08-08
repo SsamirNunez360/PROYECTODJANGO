@@ -1,120 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TutorIA Connect Pro - Solicitudes de Tutoría</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TutorIA Connect Pro - Solicitudes de Tutoría</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
 
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-light: #3b82f6;
-      --gray-light: #f9fafb;
-      --text-dark: #1f2937;
-      --muted: #6b7280;
-    }
-    body {
-      background: var(--gray-light);
-      font-family: 'Nunito', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .navbar {
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      padding: 10px 20px;
-    }
-    .navbar-brand {
-      font-weight: 700;
-      color: var(--primary);
-      font-size: 1.2rem;
-    }
-    .navbar a {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-dark);
-      margin-left: 15px;
-      text-decoration: none;
-    }
-    .btn-signup {
-      background: linear-gradient(90deg, var(--primary), var(--primary-light));
-      border: none;
-      color: #fff !important;
-      font-weight: 600;
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-    }
-    .container-main {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 15px;
-    }
-    h1 {
-      color: var(--text-dark);
-      font-weight: 700;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .card-solicitud {
-      background: #fff;
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
-    }
-    .card-solicitud:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
-    }
-    .card-solicitud h2 {
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 15px;
-      font-size: 1.25rem;
-    }
-    .card-solicitud p {
-      margin: 6px 0;
-      color: var(--text-dark);
-    }
-    .no-solicitudes {
-      text-align: center;
-      font-weight: 600;
-      color: var(--muted);
-      margin-top: 50px;
-    }
-  </style>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --gray-light: #f9fafb;
+            --text-dark: #1f2937;
+            --muted: #6b7280;
+        }
+        body {
+            background: var(--gray-light);
+            font-family: 'Nunito', sans-serif;
+        }
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 10px 20px;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .navbar a {
+            font-weight: 600;
+            color: var(--text-dark);
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .btn-signup {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border: none;
+            color: #fff !important;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .btn-signup:hover {
+            opacity: 0.9;
+        }
+        .container-main {
+            max-width: 900px;
+            margin: 30px auto;
+        }
+        .card-solicitud {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-solicitud:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+        .card-solicitud h2 {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .no-solicitudes {
+            text-align: center;
+            font-weight: 600;
+            color: var(--muted);
+            margin-top: 50px;
+        }
+        /* Estilo para el botón de asignación automática */
+        .btn-auto-assign {
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: opacity 0.2s ease;
+        }
+        .btn-auto-assign:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar d-flex justify-content-between align-items-center">
-    <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
-    <div>
-      <a href="/home">Inicio</a>
-      <a href="/" class="btn-signup">Cerrar sesión</a>
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
+        <div>
+            <a href="/home">Inicio</a>
+            <a href="/" class="btn-signup">Cerrar sesión</a>
+        </div>
+    </nav>
+
+    <div class="container-main">
+        <h1 class="text-center mb-4">Solicitudes de Tutoría</h1>
+
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for solicitud in solicitudes %}
+            <div class="card-solicitud mb-4">
+                <h2>Solicitud de {{ solicitud.id_estudiante }}</h2>
+                <p><strong>Materia:</strong> {{ solicitud.materia }}</p>
+                <p><strong>Fecha y hora preferida:</strong> {{ solicitud.fecha_hora_preferida }}</p>
+
+                <form action="{% url 'asignar_tutoria_manual' %}" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="id_estudiante" value="{{ solicitud.id_estudiante }}">
+                    <input type="hidden" name="materia" value="{{ solicitud.materia }}">
+                    <input type="hidden" name="fecha_hora_preferida" value="{{ solicitud.fecha_hora_preferida }}">
+                    <button type="submit" class="btn btn-primary">Asignar Tutoría</button>
+                </form>
+            </div>
+        {% empty %}
+            <p class="no-solicitudes">No hay solicitudes registradas.</p>
+        {% endfor %}
+
+        <div class="text-center mt-5">
+            <a href="{% url 'asignar_tutorias_automaticamente' %}" class="btn btn-auto-assign">
+                Asignar Tutorías Automáticamente
+            </a>
+        </div>
+        
     </div>
-  </nav>
 
-  <!-- Contenedor principal -->
-  <div class="container-main">
-    <h1>Solicitudes de Tutoría</h1>
-
-    {% for solicitud in solicitudes %}
-      <div class="card-solicitud">
-        <h2>Solicitud de {{ solicitud.id_estudiante }}</h2>
-        <p><strong>Materia:</strong> {{ solicitud.materia }}</p>
-        <p><strong>Fecha y hora preferida:</strong> {{ solicitud.fecha_hora_preferida }}</p>
-      </div>
-    {% empty %}
-      <p class="no-solicitudes">No hay solicitudes registradas.</p>
-    {% endfor %}
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

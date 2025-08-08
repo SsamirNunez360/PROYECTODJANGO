@@ -14,6 +14,7 @@ from django.utils.timezone import now
 from pathlib import Path
 
 
+
 from .clases import (
     SesionTutoria,
     Usuario,
@@ -92,6 +93,53 @@ def registrar_estudiante(request):
     return render(request, 'registrar_estudiante.html')
 
 
+def editar_estudiante(request, id_estudiante):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as f:
+            estudiantes = json.load(f)
+    except FileNotFoundError:
+        messages.error(request, "No se encontró el archivo de estudiantes.")
+        return redirect('estudiantes_perfil')
+
+    estudiante = next((e for e in estudiantes if e['id_usuario'] == id_estudiante), None)
+    if not estudiante:
+        messages.error(request, "Estudiante no encontrado.")
+        return redirect('estudiantes_perfil')
+
+    if request.method == 'POST':
+        estudiante['nombre'] = request.POST.get('nombre')
+        estudiante['email'] = request.POST.get('email')
+        estudiante['nivel_academico'] = request.POST.get('nivel_academico')
+        estudiante['materias_interes'] = request.POST.getlist('materias_interes')
+
+        with open(ruta_archivo, 'w', encoding='utf-8') as f:
+            json.dump(estudiantes, f, indent=4, ensure_ascii=False)
+
+        messages.success(request, "Estudiante actualizado correctamente.")
+        return redirect('estudiantes_perfil')
+
+    return render(request, 'editar_estudiante.html', {'estudiante': estudiante})
+
+
+def eliminar_estudiante(request, id_estudiante):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as f:
+            estudiantes = json.load(f)
+    except FileNotFoundError:
+        estudiantes = []
+
+    nuevos_estudiantes = [e for e in estudiantes if e['id_usuario'] != id_estudiante]
+
+    with open(ruta_archivo, 'w', encoding='utf-8') as f:
+        json.dump(nuevos_estudiantes, f, indent=4, ensure_ascii=False)
+
+    messages.success(request, "Estudiante eliminado correctamente.")
+    return redirect('estudiantes_perfil')
+
 
 
 
@@ -103,11 +151,21 @@ def solicitar_tutoria(request):
 
         archivo_json = DATA_DIR / 'solicitudes.json'
 
-        # Obtener datos del formulario
+        # Obtener y formatear la fecha
+        fecha_hora_raw = request.POST.get('fecha_hora_preferida')
+        try:
+            # Convierte el string con T a objeto datetime y lo formatea con espacio
+            fecha_hora_obj = datetime.strptime(fecha_hora_raw, "%Y-%m-%dT%H:%M")
+            fecha_hora_str = fecha_hora_obj.strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            # Si no coincide el formato, usa el string reemplazando la T
+            fecha_hora_str = fecha_hora_raw.replace("T", " ")
+
+        # Crear el diccionario de la nueva solicitud
         nueva_solicitud = {
             "id_estudiante": request.POST.get('id_estudiante'),
             "materia": request.POST.get('materia'),
-            "fecha_hora_preferida": request.POST.get('fecha_hora_preferida')
+            "fecha_hora_preferida": fecha_hora_str
         }
 
         # Cargar datos existentes o lista vacía
@@ -128,6 +186,7 @@ def solicitar_tutoria(request):
     return render(request, 'solicitud_tutoria.html')
 
 
+
 def listar_solicitudes(request):
     ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'solicitudes.json')
 
@@ -140,6 +199,179 @@ def listar_solicitudes(request):
         solicitudes = []
 
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
+
+# En tu archivo views.py
+
+
+def asignar_tutoria_manual(request):
+    """
+    Procesa una solicitud específica, busca un tutor compatible
+    y crea una nueva sesión de tutoría.
+    """
+    if request.method == 'POST':
+        plataforma = PlataformaTutorias()
+
+        # Obtener los datos de la solicitud desde el formulario
+        id_estudiante = request.POST.get('id_estudiante')
+        materia_solicitada = request.POST.get('materia')
+        fecha_hora_preferida = request.POST.get('fecha_hora_preferida')
+        
+        # Normalizar la materia para una búsqueda insensible a mayúsculas y tildes
+        materia_normalizada = normalize(materia_solicitada)
+        
+        # --- AÑADE ESTAS LÍNEAS DE DEPURACIÓN AQUÍ ---
+        print("\n--- DEPURACIÓN DE ASIGNACIÓN ---")
+        print(f"Solicitud: {id_estudiante}, Materia: '{materia_solicitada}', Fecha/Hora: '{fecha_hora_preferida}'")
+        print(f"Materia normalizada para búsqueda: '{materia_normalizada}'")
+
+        mejor_tutor = None
+        tutores_posibles = []
+
+        # Itera sobre cada tutor para verificar los criterios
+        for tutor in plataforma.diccionario_tutores.values():
+            
+            # --- AGREGAMOS IMPRESIONES PARA CADA TUTOR ---
+            materias_del_tutor_normalizadas = [normalize(m) for m in tutor.materias_especialidad]
+            disponibilidad_tutor = tutor.disponibilidad.get(fecha_hora_preferida)
+
+            print(f"\nRevisando tutor: {tutor.nombre}")
+            print(f"Materias del tutor: {materias_del_tutor_normalizadas}")
+            print(f"Disponibilidad para '{fecha_hora_preferida}': '{disponibilidad_tutor}'")
+            
+            # Condición para ver si el tutor es un posible candidato
+            if materia_normalizada in materias_del_tutor_normalizadas and disponibilidad_tutor == 'libre':
+                print(f"Tutor {tutor.nombre} CUMPLE con los criterios.")
+                tutores_posibles.append(tutor)
+            else:
+                print(f"Tutor {tutor.nombre} NO CUMPLE con los criterios.")
+        
+        print("\n------------------------------")
+        print(f"Tutores posibles encontrados: {tutores_posibles}")
+        # --- FIN DE LAS LÍNEAS DE DEPURACIÓN ---
+        
+        # 2. Si se encuentra un tutor, se asigna (simplificamos tomando el primero)
+        if tutores_posibles:
+            mejor_tutor = tutores_posibles[0]
+            
+            # 3. Crear una nueva sesión de tutoría
+            id_sesion = plataforma.generar_id_sesion()
+            nueva_sesion = SesionTutoria(
+                id_sesion=id_sesion,
+                id_estudiante=id_estudiante,
+                id_tutor=mejor_tutor.id_usuario,
+                materia=materia_solicitada,
+                fecha_hora=fecha_hora_preferida,
+                estado="Confirmada"
+            )
+
+            # 4. Actualizar las estructuras de datos de la plataforma
+            plataforma.historial_general_sesiones.append(nueva_sesion)
+            estudiante = plataforma.diccionario_estudiantes.get(id_estudiante)
+            estudiante.agregar_a_historial(nueva_sesion)
+            mejor_tutor.actualizar_disponibilidad(fecha_hora_preferida, 'ocupado')
+            
+            # 5. Eliminar la solicitud de la cola (y del archivo JSON)
+            solicitudes_pendientes = plataforma.cola_solicitudes.to_list()
+            solicitudes_actualizadas = [
+                s for s in solicitudes_pendientes 
+                if not (s['id_estudiante'] == id_estudiante and
+                        s['materia'] == materia_solicitada and
+                        s['fecha_hora_preferida'] == fecha_hora_preferida)
+            ]
+            plataforma.cola_solicitudes.items = solicitudes_actualizadas
+
+            # 6. Guardar todos los cambios en los archivos JSON
+            plataforma._guardar_datos()
+            messages.success(request, f"Tutoría asignada con éxito al tutor {mejor_tutor.nombre}.")
+        else:
+            messages.error(request, "No se pudo encontrar un tutor disponible para esta solicitud.")
+
+        return redirect('listar_solicitudes')
+
+    return redirect('listar_solicitudes')
+
+
+def asignar_tutorias_automaticamente(request):
+    plataforma = PlataformaTutorias()
+    
+    # 1. Construir el grafo de asignación
+    for solicitud in plataforma.cola_solicitudes.to_list():
+        materia_normalizada = normalize(solicitud['materia'])
+        fecha_hora_preferida = solicitud['fecha_hora_preferida']
+        
+        # Nodo de la solicitud
+        nodo_solicitud = f"solicitud_{solicitud['id_estudiante']}_{materia_normalizada}_{fecha_hora_preferida}"
+        plataforma.grafo_asignacion.agregar_nodo(nodo_solicitud)
+        
+        # Nodos de horario
+        nodo_horario = f"horario_{fecha_hora_preferida}"
+        plataforma.grafo_asignacion.agregar_nodo(nodo_horario)
+        plataforma.grafo_asignacion.agregar_arista(nodo_solicitud, nodo_horario)
+
+        # Buscar tutores que enseñen la materia y estén libres
+        for tutor in plataforma.diccionario_tutores.values():
+            materias_tutor_normalizadas = [normalize(m) for m in tutor.materias_especialidad]
+            
+            if materia_normalizada in materias_tutor_normalizadas and tutor.disponibilidad.get(fecha_hora_preferida) == 'libre':
+                # Nodo del tutor
+                nodo_tutor = f"tutor_{tutor.id_usuario}"
+                plataforma.grafo_asignacion.agregar_arista(nodo_horario, nodo_tutor)
+                
+    mensajes_exito = 0
+    mensajes_error = 0
+    solicitudes_a_eliminar = []
+
+    # 2. Iterar sobre las solicitudes para encontrar la asignación óptima
+    for solicitud in plataforma.cola_solicitudes.to_list():
+        materia_normalizada = normalize(solicitud['materia'])
+        fecha_hora_preferida = solicitud['fecha_hora_preferida']
+        
+        nodo_solicitud = f"solicitud_{solicitud['id_estudiante']}_{materia_normalizada}_{fecha_hora_preferida}"
+        
+        # Buscar tutores compatibles usando el grafo
+        tutor_encontrado = None
+        for tutor in plataforma.diccionario_tutores.values():
+            materias_tutor_normalizadas = [normalize(m) for m in tutor.materias_especialidad]
+            
+            if materia_normalizada in materias_tutor_normalizadas and tutor.disponibilidad.get(fecha_hora_preferida) == 'libre':
+                ruta, distancia = plataforma.grafo_asignacion.encontrar_camino_optimo(nodo_solicitud, f"tutor_{tutor.id_usuario}")
+                if ruta:
+                    tutor_encontrado = tutor
+                    break # Se encontró un tutor, se asigna y se pasa a la siguiente solicitud
+
+        if tutor_encontrado:
+            # Asignar la tutoría
+            id_sesion = plataforma.generar_id_sesion()
+            nueva_sesion = SesionTutoria(
+                id_sesion=id_sesion,
+                id_estudiante=solicitud['id_estudiante'],
+                id_tutor=tutor_encontrado.id_usuario,
+                materia=solicitud['materia'],
+                fecha_hora=fecha_hora_preferida,
+                estado="Confirmada"
+            )
+            plataforma.historial_general_sesiones.append(nueva_sesion)
+            estudiante = plataforma.diccionario_estudiantes.get(solicitud['id_estudiante'])
+            estudiante.agregar_a_historial(nueva_sesion)
+            tutor_encontrado.actualizar_disponibilidad(fecha_hora_preferida, 'ocupado')
+            solicitudes_a_eliminar.append(solicitud)
+            mensajes_exito += 1
+        else:
+            mensajes_error += 1
+            
+    # Eliminar las solicitudes que ya fueron asignadas
+    solicitudes_pendientes = [s for s in plataforma.cola_solicitudes.to_list() if s not in solicitudes_a_eliminar]
+    plataforma.cola_solicitudes.items = solicitudes_pendientes
+
+    # Guardar los cambios
+    plataforma._guardar_datos()
+
+    if mensajes_exito > 0:
+        messages.success(request, f"{mensajes_exito} tutorías asignadas automáticamente con éxito.")
+    if mensajes_error > 0:
+        messages.error(request, f"No se pudo encontrar tutor para {mensajes_error} solicitudes.")
+
+    return redirect('listar_solicitudes')
 
 
 
@@ -284,6 +516,55 @@ def registrar_tutor(request):
 
     # Si la solicitud es GET, simplemente muestra el formulario
     return render(request, 'registrar_tutor.html')
+
+
+def editar_tutor(request, id_tutor):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'tutores.json')
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as f:
+            tutores = json.load(f)
+    except FileNotFoundError:
+        messages.error(request, "No se encontró el archivo de tutores.")
+        return redirect('tutores_perfil')
+
+    tutor = next((t for t in tutores if t['id_usuario'] == id_tutor), None)
+    if not tutor:
+        messages.error(request, "Tutor no encontrado.")
+        return redirect('tutores_perfil')
+
+    if request.method == 'POST':
+        tutor['nombre'] = request.POST.get('nombre')
+        tutor['email'] = request.POST.get('email')
+        materias_str = request.POST.get('materias_especialidad')
+        tutor['materias_especialidad'] = [m.strip() for m in materias_str.split(',')]
+
+        with open(ruta_archivo, 'w', encoding='utf-8') as f:
+            json.dump(tutores, f, indent=4, ensure_ascii=False)
+
+        messages.success(request, "Tutor actualizado correctamente.")
+        return redirect('tutores_perfil')
+
+    return render(request, 'editar_tutor.html', {'tutor': tutor})
+
+
+def eliminar_tutor(request, id_tutor):
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'tutores.json')
+
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as f:
+            tutores = json.load(f)
+    except FileNotFoundError:
+        tutores = []
+
+    nuevos_tutores = [t for t in tutores if t['id_usuario'] != id_tutor]
+
+    with open(ruta_archivo, 'w', encoding='utf-8') as f:
+        json.dump(nuevos_tutores, f, indent=4, ensure_ascii=False)
+
+    messages.success(request, "Tutor eliminado correctamente.")
+    return redirect('tutores_perfil')
+
 
 
 def ver_perfil(request):
