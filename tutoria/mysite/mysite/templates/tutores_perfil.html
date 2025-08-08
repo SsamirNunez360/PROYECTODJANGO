@@ -118,6 +118,7 @@
     {% for tutor in tutores %}
     <div class="card-tutor">
       <h2>{{ tutor.nombre }}</h2>
+      <p><strong>ID del tutor:</strong> {{ tutor.id_usuario }}</p>
       <p><strong>Email:</strong> {{ tutor.email }}</p>
       <p><strong>Tipo de usuario:</strong> {{ tutor.tipo_usuario }}</p>
       <p><strong>Calificación promedio:</strong> {{ tutor.calificacion_promedio }}</p>
