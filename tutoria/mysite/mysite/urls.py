@@ -16,4 +16,10 @@ urlpatterns = [
     path('listar_estudiante/', views.listar_estudiante, name='listar_estudiante'),
     path('solicitud_tutoria/', views.solicitar_tutoria, name='solicitud_tutoria'),
     path('ver_solicitudes/', views.listar_solicitudes, name='ver_solicitudes'),
+    
+    # Nueva URL para el historial de sesiones
+    path('historial_sesiones/', views.historial_sesiones, name='historial_sesiones'),
+    
+    # URL para asignar tutorías automáticamente (si aún no la tienes)
+    path('asignar_tutoria/', views.asignar_tutoria, name='asignar_tutoria'),
 ]

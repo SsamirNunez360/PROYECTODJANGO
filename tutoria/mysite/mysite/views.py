@@ -315,8 +315,87 @@ def asignar_tutoria(request):
 def completar_sesion(request):
     return render(request, 'completar_sesion.html')
 
+
+
+
+
 def historial_sesiones(request):
-    return render(request, 'historial_sesiones.html')
+    # Ruta al archivo sesiones.json
+    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'sesiones.json')
+    
+    # Obtener parámetros de filtrado
+    materia_filtro = request.GET.get('materia', '').strip().lower()
+    estudiante_filtro = request.GET.get('estudiante', '').strip().lower()
+    tutor_filtro = request.GET.get('tutor', '').strip().lower()
+
+    try:
+        # Leer archivo JSON
+        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
+            sesiones = json.load(archivo)
+            
+            # Procesar cada sesión
+            sesiones_procesadas = []
+            for sesion in sesiones:
+                # Aplicar filtros
+                cumple_materia = not materia_filtro or materia_filtro in sesion.get('materia', '').lower()
+                cumple_estudiante = not estudiante_filtro or estudiante_filtro in sesion.get('id_estudiante', '').lower()
+                cumple_tutor = not tutor_filtro or tutor_filtro in sesion.get('id_tutor', '').lower()
+                
+                if cumple_materia and cumple_estudiante and cumple_tutor:
+                    # Formatear fecha
+                    try:
+                        fecha_obj = datetime.strptime(sesion['fecha_hora'], "%Y-%m-%d %H:%M")
+                        sesion['fecha_formateada'] = fecha_obj.strftime("%d/%m/%Y %H:%M")
+                        sesion['fecha_orden'] = fecha_obj.isoformat()
+                    except (ValueError, KeyError):
+                        sesion['fecha_formateada'] = sesion.get('fecha_hora', 'Fecha no disponible')
+                        sesion['fecha_orden'] = ''
+                    
+                    # Calcular estrellas
+                    if sesion.get('estado') == 'Completada' and sesion.get('calificacion_dada', 0) > 0:
+                        sesion['estrellas'] = '★' * int(sesion['calificacion_dada'])
+                    else:
+                        sesion['estrellas'] = ''
+                    
+                    sesiones_procesadas.append(sesion)
+            
+            # Ordenar por fecha (más reciente primero)
+            sesiones_procesadas.sort(key=lambda x: x.get('fecha_orden', ''), reverse=True)
+            
+            # Calcular estadísticas
+            sesiones_completadas = [s for s in sesiones_procesadas if s.get('estado') == 'Completada']
+            promedio = sum(s.get('calificacion_dada', 0) for s in sesiones_completadas) / len(sesiones_completadas) if sesiones_completadas else 0
+            
+            return render(request, 'historial_sesiones.html', {
+                'sesiones': sesiones_procesadas,
+                'total_sesiones': len(sesiones_procesadas),
+                'sesiones_completadas': len(sesiones_completadas),
+                'promedio_calificaciones': round(promedio, 1),
+                'filtros': {
+                    'materia': materia_filtro,
+                    'estudiante': estudiante_filtro,
+                    'tutor': tutor_filtro
+                }
+            })
+    
+    except FileNotFoundError:
+        return render(request, 'historial_sesiones.html', {
+            'error': 'El archivo de sesiones no fue encontrado',
+            'sesiones': [],
+            'total_sesiones': 0,
+            'sesiones_completadas': 0,
+            'promedio_calificaciones': 0
+        })
+    except json.JSONDecodeError:
+        return render(request, 'historial_sesiones.html', {
+            'error': 'Error al leer el archivo de sesiones',
+            'sesiones': [],
+            'total_sesiones': 0,
+            'sesiones_completadas': 0,
+            'promedio_calificaciones': 0
+        })
+
+
 
 def salir(request):
     return redirect('/')
