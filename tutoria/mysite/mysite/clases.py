@@ -564,7 +564,7 @@ class PlataformaTutorias:
             return True
         else:
             print("No se proporcionaron nuevos datos para actualizar al estudiante.")
-            return False#----------------Gaby
+            return False#---------------Gaby
 
     def actualizar_tutor(self, id_tutor, nuevo_nombre=None, nuevo_email=None, nuevas_materias_especialidad=None, nueva_calificacion=None, nueva_disponibilidad_dict=None):
         """
