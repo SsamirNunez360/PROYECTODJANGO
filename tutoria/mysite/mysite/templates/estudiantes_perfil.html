@@ -114,6 +114,7 @@
     {% for estudiante in estudiantes %}
     <div class="card-estudiante">
       <h2>{{ estudiante.nombre }}</h2>
+      <p><strong>ID del estudiante:</strong> {{ estudiante.id_usuario }}</p>
       <p><strong>Email:</strong> {{ estudiante.email }}</p>
       <p><strong>Tipo de usuario:</strong> {{ estudiante.tipo_usuario }}</p>
       <p><strong>Nivel académico:</strong> {{ estudiante.nivel_academico }}</p>
