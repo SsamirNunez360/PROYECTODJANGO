@@ -275,7 +275,7 @@ class ArbolBinarioBusqueda:
         self.raiz = None
         for tutor_obj in tutores_restantes:
             self.insertar(tutor_obj)
-        # print(f"Árbol de tutores reconstruido después de eliminar/actualizar a '{id_tutor}'.")
+        # print(f"Árbol de tutores reconstruido después de eliminar/actualizar a '{id_tutor}'.")--Alma
 
 # --- Implementación de Grafo para Asignación de Tutorías ---
 class GrafoAsignacion:
@@ -345,7 +345,6 @@ class GrafoAsignacion:
             return ruta, distancias[destino]
         return None, float('infinity')
 
-
 # =========================================================
 # CLASE PRINCIPAL DEL SISTEMA
 # =========================================================
@@ -377,7 +376,6 @@ class PlataformaTutorias:
 
     def _cargar_datos(self):
         """Carga los datos desde los archivos JSON individuales."""
-        # print("Cargando datos...")
         try:
             # Cargar estudiantes
             if os.path.exists(self.ARCHIVO_DATOS_ESTUDIANTES):
@@ -393,7 +391,6 @@ class PlataformaTutorias:
                     if estudiantes_data:
                         last_id = max([int(e["id_usuario"][1:]) for e in estudiantes_data])
                         self._next_estudiante_id = last_id + 1
-            # print("Estudiantes cargados.")
 
             # Cargar tutores
             if os.path.exists(self.ARCHIVO_DATOS_TUTORES):
@@ -411,7 +408,6 @@ class PlataformaTutorias:
                     if tutores_data:
                         last_id = max([int(t["id_usuario"][1:]) for t in tutores_data])
                         self._next_tutor_id = last_id + 1
-            # print("Tutores cargados.")
             
             # Cargar sesiones
             if os.path.exists(self.ARCHIVO_DATOS_SESIONES):
@@ -568,11 +564,11 @@ class PlataformaTutorias:
             return True
         else:
             print("No se proporcionaron nuevos datos para actualizar al estudiante.")
-            return False
+            return False#----------------Gaby
 
     def actualizar_tutor(self, id_tutor, nuevo_nombre=None, nuevo_email=None, nuevas_materias_especialidad=None, nueva_calificacion=None, nueva_disponibilidad_dict=None):
         """
-        CRUD: U (Update) - Actualiza la información de un tutor existente.
+        CRUD: U (Update) - Actualiza la información de un tutor existente. 
         """
         tutor = self.diccionario_tutores.get(id_tutor)
         if not tutor:
@@ -613,7 +609,6 @@ class PlataformaTutorias:
         else:
             print("No se proporcionaron nuevos datos para actualizar al tutor.")
             return False
-
 
     def iniciar_sesion(self, email, password):
         ruta_usuarios = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'usuarios.json')
