@@ -12,5 +12,19 @@
         "nombre": "Ssamir",
         "apellido": "Nunez",
         "tipo": "administrador"
+    },
+    {
+        "email": "almabetancourth@outlook.com",
+        "password": "admin123",
+        "nombre": "Alma",
+        "apellido": "Betancourth",
+        "tipo": "administrador"
+    },
+    {
+        "email": "gabrielareyes@outlook.com",
+        "password": "admin123",
+        "nombre": "Gabriela",
+        "apellido": "Reyes",
+        "tipo": "administrador"
     }
 ]

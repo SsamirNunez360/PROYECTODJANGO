@@ -62,10 +62,42 @@
       font-size: 1rem;
       transition: background 0.3s ease;
       display: block;
-      margin: 0 auto;
+      margin: 0 auto 15px auto;
+      min-width: 140px;
     }
     button:hover {
       background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    }
+
+    /* Botón secundario para Cancelar */
+    .btn-secondary-form {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      display: block;
+      margin: 0 auto;
+      min-width: 140px;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .btn-secondary-form:hover {
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    /* Contenedor para los dos botones lado a lado */
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -89,8 +121,10 @@
       <label for="materias_interes">Materias de interés (separadas por coma):</label>
       <textarea id="materias_interes" name="materias_interes" rows="3">{{ estudiante.materias_interes|join:", " }}</textarea>
 
-      <button type="submit">Guardar Cambios</button>
-      <a href="/estudiantes_perfil" class="btn-secondary-form">Cancelar</a>
+      <div class="btn-group">
+        <button type="submit">Guardar Cambios</button>
+        <a href="/estudiantes_perfil" class="btn-secondary-form">Cancelar</a>
+      </div>
     </form>
   </div>
 
