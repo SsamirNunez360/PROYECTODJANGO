@@ -57,13 +57,11 @@
     {
         "id_usuario": "E003",
         "nombre": "Ssamir Nuñez",
-        "email": "ssamirnuñez@unah.hn",
+        "email": "ssamirnunez@unah.hn",
         "tipo_usuario": "Estudiante",
         "nivel_academico": "Bachillerato",
         "materias_interes": [
-            "Informatica",
-            "Fisica",
-            "Ingles"
+            "Informatica, Fisica, Ingles"
         ],
         "historial_tutorias": [
             {
@@ -96,7 +94,7 @@
         "tipo_usuario": "Estudiante",
         "nivel_academico": "Universitario",
         "materias_interes": [
-            "Matematicas", 
+            "Matematicas",
             "Informatica"
         ],
         "historial_tutorias": []

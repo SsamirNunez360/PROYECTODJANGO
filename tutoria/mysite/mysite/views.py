@@ -537,7 +537,9 @@ def editar_tutor(request, id_tutor):
         tutor['nombre'] = request.POST.get('nombre')
         tutor['email'] = request.POST.get('email')
         materias_str = request.POST.get('materias_especialidad')
-        tutor['materias_especialidad'] = [m.strip() for m in materias_str.split(',')]
+        materias_list = request.POST.getlist('materias')
+        tutor['materias_especialidad'] = [m.strip() for m in materias_list if m.strip()]
+
 
         with open(ruta_archivo, 'w', encoding='utf-8') as f:
             json.dump(tutores, f, indent=4, ensure_ascii=False)
