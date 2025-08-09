@@ -129,7 +129,6 @@
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar d-flex justify-content-between align-items-center">
     <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
     <div>
@@ -138,7 +137,6 @@
     </div>
   </nav>
 
-  <!-- Contenedor principal -->
   <div class="container-main">
     <h1>Perfil de los Estudiantes</h1>
 
@@ -157,20 +155,24 @@
         {% endfor %}
       </ul>
 
-      <p><strong>Historial de tutorías:</strong></p>
-      <ul>
-        {% for sesion in estudiante.historial_tutorias %}
-          <li>
-            {{ sesion.fecha_hora }} - {{ sesion.materia }} ({{ sesion.estado }}) - Calificación dada: {{ sesion.calificacion_dada }}
-          </li>
-        {% endfor %}
-      </ul>
+      <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseTutories-{{ estudiante.id_usuario }}" role="button" aria-expanded="false" aria-controls="collapseTutories-{{ estudiante.id_usuario }}">
+        Historial de tutorías
+      </a>
 
-      <!-- Botones Editar y Eliminar -->
+      <div class="collapse mt-2" id="collapseTutories-{{ estudiante.id_usuario }}">
+        <ul>
+          {% for sesion in estudiante.historial_tutorias %}
+            <li>
+              {{ sesion.fecha_hora }} - {{ sesion.materia }} ({{ sesion.estado }}) - Calificación dada: {{ sesion.calificacion_dada }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
       <div class="btn-group-estudiante">
         <a href="{% url 'editar_estudiante' estudiante.id_usuario %}" class="btn-editar">Editar</a>
         <a href="{% url 'eliminar_estudiante' estudiante.id_usuario %}" class="btn-eliminar"
-           onclick="return confirm('¿Seguro que quieres eliminar este estudiante?');">Eliminar</a>
+            onclick="return confirm('¿Seguro que quieres eliminar este estudiante?');">Eliminar</a>
       </div>
     </div>
     {% empty %}
