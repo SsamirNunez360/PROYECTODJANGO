@@ -32,5 +32,7 @@ urlpatterns = [
 
     path('editar_tutor/<str:id_tutor>/', views.editar_tutor, name='editar_tutor'),
     path('eliminar_tutor/<str:id_tutor>/', views.eliminar_tutor, name='eliminar_tutor'),
+    
+    path('completar_sesion/', views.completar_sesion, name='completar_sesion'),
 
 ]

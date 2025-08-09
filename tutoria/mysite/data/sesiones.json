@@ -34,5 +34,14 @@
         "fecha_hora": "2025-08-02 08:00",
         "estado": "Completada",
         "calificacion_dada": 5
+    },
+    {
+        "id_sesion": "S001",
+        "id_estudiante": "E001",
+        "id_tutor": "T001",
+        "materia": "Fisica",
+        "fecha_hora": "2025-08-06 11:00",
+        "estado": "Confirmada",
+        "calificacion_dada": 0
     }
 ]

@@ -13,6 +13,8 @@ from datetime import datetime
 from django.utils.timezone import now
 from pathlib import Path
 from django.contrib.auth import authenticate
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 
 
@@ -677,6 +679,51 @@ def historial_sesiones(request):
             'promedio_calificaciones': 0
         })
 
+
+# La función que se ejecuta cuando se envía el formulario
+@require_POST
+def completar_sesion(request):
+    try:
+        # 1. Obtener los datos del formulario (request.POST)
+        id_sesion = request.POST.get('id_sesion')
+        calificacion_str = request.POST.get('calificacion')
+
+        # 2. Validar los datos recibidos
+        if not id_sesion or not calificacion_str:
+            # Puedes manejar este error de forma más elegante si lo deseas
+            return redirect('historial') # Redirige si faltan datos
+
+        calificacion = int(calificacion_str)
+        if not (1 <= calificacion <= 5):
+            return redirect('historial') # Redirige si la calificación es inválida
+
+        # 3. Leer y actualizar el archivo JSON
+        # Usamos la misma ruta absoluta para asegurar que encontramos el archivo
+        directorio_base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_archivo = os.path.join(directorio_base, 'mysite', 'data', 'sesiones.json')
+
+        with open(ruta_archivo, 'r+', encoding='utf-8') as archivo:
+            sesiones = json.load(archivo)
+            sesion_encontrada = False
+            for sesion in sesiones:
+                if sesion.get('id_sesion') == id_sesion and sesion.get('estado') == 'Confirmada':
+                    sesion['estado'] = 'Completada'
+                    sesion['calificacion_dada'] = calificacion
+                    sesion_encontrada = True
+                    break
+
+            if sesion_encontrada:
+                # Volvemos al inicio del archivo para sobrescribirlo
+                archivo.seek(0)
+                json.dump(sesiones, archivo, indent=4, ensure_ascii=False)
+                archivo.truncate() # Cortamos el archivo para evitar datos antiguos
+
+        # 4. Redirigir al usuario
+        return redirect('historial_sesiones')
+
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
+        print(f"Error al procesar la sesión: {e}")
+        return redirect('historial_sesiones')
 
 
 def salir(request):
