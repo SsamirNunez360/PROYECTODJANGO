@@ -12,6 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.utils.timezone import now
 from pathlib import Path
+from django.contrib.auth import authenticate
+
 
 
 
@@ -36,22 +38,19 @@ def login(request):
     return render(request,"login.html")
 
 
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        with open('data/usuarios.json', 'r') as f:
-            usuarios = json.load(f)
-
-        usuario = next((u for u in usuarios if u['email'] == email and u['password'] == password), None)
-
-        if usuario:
-            # Usuario autenticado
-            request.session['usuario'] = usuario  # Guardar info en sesión
-            return redirect('home')
+def iniciar(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+        usuario = authenticate(request, username=email, password=password)
+        
+        if usuario is not None:
+            login(request, usuario)
+            request.session['user_type'] = usuario.tipo  # <-- acceso correcto
+            return redirect('home')  # O tu vista deseada
         else:
-            messages.error(request, 'Email o contraseña incorrectos')
+            messages.error(request, "Credenciales incorrectas")
+            return redirect('login')
 
     return render(request, 'login.html')
 
@@ -450,14 +449,14 @@ def iniciar(request):
             return render(request, 'login.html')
         
         # Guardar en sesión según el tipo de usuario
-        request.session['user_type'] = resultado['tipo']
+        request.session['user_type'] = resultado.tipo
         request.session['user_email'] = email
         
-        if resultado['tipo'] == 'estudiante':
-            request.session['user_id'] = resultado['objeto'].id_usuario
+        if resultado.tipo == 'estudiante':
+            request.session['user_id'] = resultado.objeto.id_usuario
             return redirect('dashboard_estudiante')
-        elif resultado['tipo'] == 'tutor':
-            request.session['user_id'] = resultado['objeto'].id_usuario
+        elif resultado.tipo == 'tutor':
+            request.session['user_id'] = resultado.objeto.id_usuario
             return redirect('dashboard_tutor')
         else:
             return redirect('home')
