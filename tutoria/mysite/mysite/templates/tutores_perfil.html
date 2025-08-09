@@ -145,7 +145,6 @@
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar d-flex justify-content-between align-items-center">
     <a class="navbar-brand" href="#">🎓 TutorIA Connect Pro</a>
     <div>
@@ -154,7 +153,6 @@
     </div>
   </nav>
 
-  <!-- Contenedor principal -->
   <div class="container-main">
     <h1>Perfil de los Tutores</h1>
 
@@ -173,34 +171,43 @@
         {% endfor %}
       </ul>
 
-      <p><strong>Disponibilidad:</strong></p>
-      <ul>
-        {% for fecha, estado in tutor.disponibilidad.items %}
-          <li>
-            {{ fecha }}:
-            {% if estado|lower == 'libre' %}
-              <span class="badge bg-success text-light px-2 py-1 rounded">{{ estado }}</span>
-            {% else %}
-              <span class="badge bg-danger text-light px-2 py-1 rounded">{{ estado }}</span>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
+      <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseDisponibilidad-{{ tutor.id_usuario }}" role="button" aria-expanded="false" aria-controls="collapseDisponibilidad-{{ tutor.id_usuario }}">
+        Disponibilidad
+      </a>
+      
+      <div class="collapse mt-2" id="collapseDisponibilidad-{{ tutor.id_usuario }}">
+        <ul>
+          {% for fecha, estado in tutor.disponibilidad.items %}
+            <li>
+              {{ fecha }}:
+              {% if estado|lower == 'libre' %}
+                <span class="badge bg-success text-light px-2 py-1 rounded">{{ estado }}</span>
+              {% else %}
+                <span class="badge bg-danger text-light px-2 py-1 rounded">{{ estado }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
 
-      <p><strong>Historial de tutorías:</strong></p>
-      <ul>
-        {% for sesion in tutor.historial_tutorias %}
-          <li>
-            {{ sesion.fecha_hora }} - {{ sesion.materia }} ({{ sesion.estado }}) - Calificación: {{ sesion.calificacion_dada }}
-          </li>
-        {% endfor %}
-      </ul>
+      <a class="btn btn-primary mt-3" data-bs-toggle="collapse" href="#collapseTutories-{{ tutor.id_usuario }}" role="button" aria-expanded="false" aria-controls="collapseTutories-{{ tutor.id_usuario }}">
+        Historial de tutorías
+      </a>
 
-      <!-- Botones Editar y Eliminar -->
+      <div class="collapse mt-2" id="collapseTutories-{{ tutor.id_usuario }}">
+        <ul>
+          {% for sesion in tutor.historial_tutorias %}
+            <li>
+              {{ sesion.fecha_hora }} - {{ sesion.materia }} ({{ sesion.estado }}) - Calificación: {{ sesion.calificacion_dada }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
       <div class="btn-group-tutor">
         <a href="{% url 'editar_tutor' tutor.id_usuario %}" class="btn-editar">Editar</a>
         <a href="{% url 'eliminar_tutor' tutor.id_usuario %}" class="btn-eliminar"
-           onclick="return confirm('¿Seguro que quieres eliminar este tutor?');">Eliminar</a>
+            onclick="return confirm('¿Seguro que quieres eliminar este tutor?');">Eliminar</a>
       </div>
     </div>
     {% empty %}
