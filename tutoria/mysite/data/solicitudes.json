@@ -18,5 +18,20 @@
         "id_estudiante": "E003",
         "materia": "Ingles",
         "fecha_hora_preferida": "2025-08-28 14:00"
+    },
+    {
+        "id_estudiante": "E005",
+        "materia": "Matematicas",
+        "fecha_hora_preferida": "2025-08-04 11:00"
+    },
+    {
+        "id_estudiante": "E005",
+        "materia": "Informatica",
+        "fecha_hora_preferida": "2025-08-05 11:00"
+    },
+    {
+        "id_estudiante": "E001",
+        "materia": "Fisica",
+        "fecha_hora_preferida": "2025-08-05 11:00"
     }
 ]

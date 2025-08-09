@@ -3,63 +3,36 @@
         "id_sesion": "S001",
         "id_estudiante": "E001",
         "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-04 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
+        "materia": "Informatica",
+        "fecha_hora": "2025-08-01 08:00",
+        "estado": "Completada",
+        "calificacion_dada": 4
     },
     {
-        "id_sesion": "S001",
-        "id_estudiante": "E001",
-        "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
+        "id_sesion": "S002",
+        "id_estudiante": "E002",
+        "id_tutor": "T003",
+        "materia": "Historia",
+        "fecha_hora": "2025-08-02 10:00",
+        "estado": "Completada",
+        "calificacion_dada": 5
     },
     {
-        "id_sesion": "S001",
-        "id_estudiante": "E001",
+        "id_sesion": "S003",
+        "id_estudiante": "E003",
         "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
+        "materia": "Matematicas",
+        "fecha_hora": "2025-08-01 11:00",
+        "estado": "Completada",
+        "calificacion_dada": 4
     },
     {
-        "id_sesion": "S001",
+        "id_sesion": "S004",
         "id_estudiante": "E001",
-        "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
-    },
-    {
-        "id_sesion": "S001",
-        "id_estudiante": "E001",
-        "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
-    },
-    {
-        "id_sesion": "S001",
-        "id_estudiante": "E001",
-        "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
-    },
-    {
-        "id_sesion": "S001",
-        "id_estudiante": "E001",
-        "id_tutor": "T001",
-        "materia": "Fisica",
-        "fecha_hora": "2025-08-05 11:00",
-        "estado": "Confirmada",
-        "calificacion_dada": 0
+        "id_tutor": "T002",
+        "materia": "Matematicas",
+        "fecha_hora": "2025-08-02 08:00",
+        "estado": "Completada",
+        "calificacion_dada": 5
     }
 ]
