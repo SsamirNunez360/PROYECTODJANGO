@@ -1,0 +1,353 @@
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /asignar-tutoria-manual/
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 354, in asignar_tutoria_manual
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 413, in __init__
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 414, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 414, in __init__
+    tut_dict.get("historial_tutorias")
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 414, in __init__
+    tut_dict.get("historial_tutorias")
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 414, in __init__
+    tut_dict.get("historial_tutorias")
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 375, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 375, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 48, in iniciar
+    plataforma = PlataformaTutorias()
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/clases.py", line 375, in __init__
+    os.makedirs("data", exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: 'data'

@@ -59,11 +59,9 @@ def iniciar(request):
         request.session["user_type"] = resultado.tipo
         request.session["user_name"] = resultado.usuario.nombre
 
-        # Redirigir según el tipo
-        if resultado.tipo == "tutor":
-            return redirect("tutores_perfil")
-        else:  # "estudiante"
-            return redirect("estudiantes_perfil")
+        # Redirigir a home (página principal después del login)
+        messages.success(request, f"¡Bienvenido {resultado.usuario.nombre}!")
+        return redirect("home")
 
     # GET → mostrar login
     return render(request, "login.html")
@@ -71,87 +69,176 @@ def iniciar(request):
 
 
 def registrar_estudiante(request):
+    import MySQLdb
+    import json
+    
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         email = request.POST.get('email')
         nivel = request.POST.get('nivel_academico')
-        materias = request.POST.getlist('materias_interes') 
-
-        # Cargar el archivo existente
-        ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
+        materias = request.POST.getlist('materias_interes')
+        
         try:
-            with open(ruta_archivo, 'r', encoding='utf-8') as f:
-                estudiantes_data = json.load(f)
-        except FileNotFoundError:
-            estudiantes_data = []
-
-        # Generar nuevo ID automático
-        nuevo_id = f"E{len(estudiantes_data)+1:03d}"
-
-        # Crear objeto Estudiante
-        nuevo_estudiante = Estudiante(
-            id_usuario=nuevo_id,
-            nombre=nombre,
-            email=email,
-            nivel_academico=nivel,
-            materias_interes=materias
-        )
-
-        # Agregar y guardar en JSON
-        estudiantes_data.append(nuevo_estudiante.to_dict())
-        with open(ruta_archivo, 'w', encoding='utf-8') as f:
-            json.dump(estudiantes_data, f, indent=4, ensure_ascii=False)
-
-        return redirect('estudiantes_perfil')
+            conn = MySQLdb.connect(host='localhost', user='admin', passwd='123', db='db_Tutoria')
+            cursor = conn.cursor()
+            
+            # Crear usuario en tbl_Usuarios
+            from usuarios.models import UsuarioPersonalizado
+            usuario = UsuarioPersonalizado.objects.create_user(
+                email=email,
+                password='123456',  # Contraseña por defecto
+                tipo='Estudiante'
+            )
+            
+            # Insertar en tbl_Estudiantes
+            materias_json = json.dumps(materias, ensure_ascii=False)
+            cursor.execute(
+                """INSERT INTO tbl_Estudiantes (idUsuario, nivel_academico, materias_interes)
+                VALUES (%s, %s, %s)""",
+                (usuario.idUsuario, nivel, materias_json)
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            from django.contrib import messages
+            messages.success(request, f"Estudiante {nombre} registrado correctamente.")
+            return redirect('estudiantes_perfil')
+            
+        except Exception as e:
+            print(f"Error al registrar estudiante: {e}")
+            from django.contrib import messages
+            messages.error(request, f"Error al registrar: {str(e)}")
+            return render(request, 'registrar_estudiante.html')
 
     return render(request, 'registrar_estudiante.html')
 
 
 def editar_estudiante(request, id_estudiante):
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
-
+    import MySQLdb
+    import json
+    from django.contrib import messages
+    
     try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as f:
-            estudiantes = json.load(f)
-    except FileNotFoundError:
-        messages.error(request, "No se encontró el archivo de estudiantes.")
-        return redirect('estudiantes_perfil')
-
-    estudiante = next((e for e in estudiantes if e['id_usuario'] == id_estudiante), None)
-    if not estudiante:
-        messages.error(request, "Estudiante no encontrado.")
-        return redirect('estudiantes_perfil')
-
-    if request.method == 'POST':
-        estudiante['nombre'] = request.POST.get('nombre')
-        estudiante['email'] = request.POST.get('email')
-        estudiante['nivel_academico'] = request.POST.get('nivel_academico')
-        estudiante['materias_interes'] = request.POST.getlist('materias_interes')
-
-        with open(ruta_archivo, 'w', encoding='utf-8') as f:
-            json.dump(estudiantes, f, indent=4, ensure_ascii=False)
-
-        messages.success(request, "Estudiante actualizado correctamente.")
+        idEstudiante = int(id_estudiante.replace('E', '')) if id_estudiante else None
+    except:
+        idEstudiante = None
+    
+    try:
+        conn = MySQLdb.connect(host='localhost', user='admin', passwd='123', db='db_Tutoria')
+        cursor = conn.cursor()
+        
+        # Obtener estudiante y sus datos
+        cursor.execute(
+            """SELECT e.idEstudiante, e.idUsuario, e.nivel_academico, e.materias_interes, u.correo
+            FROM tbl_Estudiantes e
+            JOIN tbl_Usuarios u ON e.idUsuario = u.idUsuario
+            WHERE e.idEstudiante = %s""",
+            (idEstudiante,)
+        )
+        
+        row = cursor.fetchone()
+        if not row:
+            cursor.close()
+            conn.close()
+            messages.error(request, "Estudiante no encontrado.")
+            return redirect('estudiantes_perfil')
+        
+        idEstudianteDB, idUsuario, nivel_actual, materias_json, email_actual = row
+        
+        if request.method == 'POST':
+            nombre = request.POST.get('nombre')
+            email = request.POST.get('email')
+            nivel = request.POST.get('nivel_academico')
+            materias = request.POST.getlist('materias_interes')
+            
+            # Actualizar usuario en tbl_Usuarios
+            cursor.execute(
+                """UPDATE tbl_Usuarios SET correo = %s WHERE idUsuario = %s""",
+                (email, idUsuario)
+            )
+            
+            # Actualizar estudiante en tbl_Estudiantes
+            materias_json_new = json.dumps(materias, ensure_ascii=False)
+            cursor.execute(
+                """UPDATE tbl_Estudiantes SET nivel_academico = %s, materias_interes = %s
+                WHERE idEstudiante = %s""",
+                (nivel, materias_json_new, idEstudianteDB)
+            )
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            messages.success(request, "Estudiante actualizado correctamente.")
+            return redirect('estudiantes_perfil')
+        
+        # Parsear materias JSON para mostrar en formulario
+        try:
+            materias_lista = json.loads(materias_json) if materias_json else []
+        except:
+            materias_lista = []
+        
+        estudiante = {
+            'id_usuario': f"E{idEstudianteDB:03d}",
+            'nombre': 'N/A',  # El nombre está en tbl_Usuarios
+            'email': email_actual,
+            'nivel_academico': nivel_actual,
+            'materias_interes': materias_lista
+        }
+        
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        print(f"Error al editar estudiante: {e}")
+        messages.error(request, f"Error: {str(e)}")
         return redirect('estudiantes_perfil')
 
     return render(request, 'editar_estudiante.html', {'estudiante': estudiante})
 
 
 def eliminar_estudiante(request, id_estudiante):
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
-
+    import MySQLdb
+    from django.contrib import messages
+    
     try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as f:
-            estudiantes = json.load(f)
-    except FileNotFoundError:
-        estudiantes = []
-
-    nuevos_estudiantes = [e for e in estudiantes if e['id_usuario'] != id_estudiante]
-
-    with open(ruta_archivo, 'w', encoding='utf-8') as f:
-        json.dump(nuevos_estudiantes, f, indent=4, ensure_ascii=False)
-
-    messages.success(request, "Estudiante eliminado correctamente.")
+        idEstudiante = int(id_estudiante.replace('E', '')) if id_estudiante else None
+    except:
+        idEstudiante = None
+    
+    try:
+        conn = MySQLdb.connect(host='localhost', user='admin', passwd='123', db='db_Tutoria')
+        cursor = conn.cursor()
+        
+        # Obtener idUsuario antes de eliminar
+        cursor.execute("SELECT idUsuario FROM tbl_Estudiantes WHERE idEstudiante = %s", (idEstudiante,))
+        row = cursor.fetchone()
+        
+        if not row:
+            cursor.close()
+            conn.close()
+            messages.error(request, "Estudiante no encontrado.")
+            return redirect('estudiantes_perfil')
+        
+        idUsuario = row[0]
+        
+        # Eliminar estudiante (CASCADE elimina historial automáticamente)
+        cursor.execute("DELETE FROM tbl_Estudiantes WHERE idEstudiante = %s", (idEstudiante,))
+        
+        # Opcionalmente eliminar usuario también
+        cursor.execute("DELETE FROM tbl_Usuarios WHERE idUsuario = %s", (idUsuario,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        messages.success(request, "Estudiante eliminado correctamente.")
+        
+    except Exception as e:
+        print(f"Error al eliminar estudiante: {e}")
+        messages.error(request, f"Error al eliminar: {str(e)}")
+    
     return redirect('estudiantes_perfil')
 
 
@@ -159,57 +246,98 @@ def eliminar_estudiante(request, id_estudiante):
 
 def solicitar_tutoria(request):
     if request.method == 'POST':
-        # Ruta exacta corregida (tutoria/mysite/mysite/data/)
-        DATA_DIR = Path(settings.BASE_DIR) / 'mysite' / 'data'  # ¡Ajustado!
-        DATA_DIR.mkdir(exist_ok=True)  # Crea solo si no existe
-
-        archivo_json = DATA_DIR / 'solicitudes.json'
-
-        # Obtener y formatear la fecha
+        import MySQLdb
+        
+        # Obtener datos del formulario
+        id_estudiante = request.POST.get('id_estudiante')
+        materia = request.POST.get('materia')
         fecha_hora_raw = request.POST.get('fecha_hora_preferida')
+        
+        # Convertir el estudiante de E001 a 1
         try:
-            # Convierte el string con T a objeto datetime y lo formatea con espacio
+            idEstudiante = int(id_estudiante.replace('E', '')) if id_estudiante else None
+        except:
+            idEstudiante = None
+        
+        # Obtener y formatear la fecha
+        try:
             fecha_hora_obj = datetime.strptime(fecha_hora_raw, "%Y-%m-%dT%H:%M")
             fecha_hora_str = fecha_hora_obj.strftime("%Y-%m-%d %H:%M")
         except ValueError:
-            # Si no coincide el formato, usa el string reemplazando la T
             fecha_hora_str = fecha_hora_raw.replace("T", " ")
-
-        # Crear el diccionario de la nueva solicitud
-        nueva_solicitud = {
-            "id_estudiante": request.POST.get('id_estudiante'),
-            "materia": request.POST.get('materia'),
-            "fecha_hora_preferida": fecha_hora_str
-        }
-
-        # Cargar datos existentes o lista vacía
-        try:
-            with open(archivo_json, 'r', encoding='utf-8') as f:
-                solicitudes = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            solicitudes = []
-
-        # Guardar la nueva solicitud
-        solicitudes.append(nueva_solicitud)
         
-        with open(archivo_json, 'w', encoding='utf-8') as f:
-            json.dump(solicitudes, f, indent=4, ensure_ascii=False)
+        # Guardar en la BD
+        try:
+            conn = MySQLdb.connect(host='localhost', user='admin', passwd='123', db='db_Tutoria')
+            cursor = conn.cursor()
+            
+            # Verificar que el estudiante existe
+            cursor.execute("SELECT idEstudiante FROM tbl_Estudiantes WHERE idEstudiante = %s", (idEstudiante,))
+            if not cursor.fetchone():
+                cursor.close()
+                conn.close()
+                return render(request, 'solicitud_tutoria.html', {'error': 'Estudiante no encontrado'})
+            
+            # Generar ID único para la solicitud
+            id_solicitud_json = f"SOL_{id_estudiante}_{materia.replace(' ', '_')}"
+            
+            # Insertar solicitud en BD
+            cursor.execute(
+                """INSERT INTO tbl_Solicitudes 
+                (id_solicitud_json, idEstudiante, materia, fecha_hora_preferida, estado, fecha_creacion)
+                VALUES (%s, %s, %s, %s, %s, NOW())""",
+                (id_solicitud_json, idEstudiante, materia, fecha_hora_str, 'Pendiente')
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+        except Exception as e:
+            print(f"Error al guardar solicitud: {e}")
+            return render(request, 'solicitud_tutoria.html', {'error': str(e)})
 
-        return redirect('home')  # Cambia 'home' si usas otra vista
+        return redirect('home')
 
     return render(request, 'solicitud_tutoria.html')
 
 
 
 def listar_solicitudes(request):
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'solicitudes.json')
-
+    import MySQLdb
+    
     try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
-            solicitudes = json.load(archivo)
-    except FileNotFoundError:
+        conn = MySQLdb.connect(host='localhost', user='admin', passwd='123', db='db_Tutoria')
+        cursor = conn.cursor()
+        
+        # Obtener solicitudes de la BD con información del estudiante
+        cursor.execute(
+            """SELECT s.idSolicitud, s.id_solicitud_json, s.idEstudiante, 
+                      CONCAT('E', LPAD(s.idEstudiante, 3, '0')) as id_estudiante,
+                      s.materia, s.fecha_hora_preferida, s.estado, s.fecha_creacion
+               FROM tbl_Solicitudes s
+               ORDER BY s.fecha_creacion DESC"""
+        )
+        
+        rows = cursor.fetchall()
         solicitudes = []
-    except json.JSONDecodeError:
+        
+        for row in rows:
+            solicitudes.append({
+                'idSolicitud': row[0],
+                'id_solicitud_json': row[1],
+                'idEstudiante': row[2],
+                'id_estudiante': row[3],
+                'materia': row[4],
+                'fecha_hora_preferida': row[5],
+                'estado': row[6],
+                'fecha_creacion': row[7]
+            })
+        
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        print(f"Error al obtener solicitudes: {e}")
         solicitudes = []
 
     return render(request, 'ver_solicitudes.html', {'solicitudes': solicitudes})
@@ -399,18 +527,48 @@ def normalize(text):
     return ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
 
 def tutores_perfil(request):
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'tutores.json')
-
+    # Mostrar tutores desde la tabla tbl_Tutores en la BD
     subject = request.GET.get('subject', '').strip()
     normalized_subject = normalize(subject)
 
-    try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
-            tutores = json.load(archivo)
-    except FileNotFoundError:
-        tutores = []
+    from django.db import connection
 
-    # Filtrar tutores que tengan la materia
+    tutores = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT t.idTutor, t.id_tutor_json, u.nombre, u.apellido, u.correo, u.tipo, t.materias_especialidad
+            FROM tbl_Tutores t
+            JOIN tbl_Usuarios u ON t.idUsuario = u.idUsuario
+            ORDER BY t.idTutor
+        """)
+        rows = cursor.fetchall()
+
+    for row in rows:
+        idTutor, id_tutor_json, nombre, apellido, correo, tipo_usuario, materias_raw = row
+        # materias_especialidad puede ser JSON texto o una cadena; normalizar a lista
+        materias_list = []
+        try:
+            if materias_raw:
+                materias_list = json.loads(materias_raw)
+                # Si viene como una sola cadena con comas, convertir a lista
+                if isinstance(materias_list, str):
+                    materias_list = [m.strip() for m in materias_list.split(',') if m.strip()]
+        except Exception:
+            # Fallback: intentar separar por comas
+            if materias_raw and isinstance(materias_raw, str):
+                materias_list = [m.strip() for m in materias_raw.split(',') if m.strip()]
+
+        tutor_obj = {
+            'id_usuario': id_tutor_json if id_tutor_json else f"T{idTutor:03d}",
+            'nombre': f"{nombre} {apellido}".strip(),
+            'email': correo,
+            'tipo_usuario': tipo_usuario,
+            'materias_especialidad': materias_list,
+        }
+
+        tutores.append(tutor_obj)
+
+    # Filtrar por materia si se proporcionó
     if normalized_subject:
         tutores_filtrados = []
         for tutor in tutores:
@@ -423,18 +581,49 @@ def tutores_perfil(request):
     return render(request, 'tutores_perfil.html', {'tutores': tutores_filtrados, 'subject': subject})
 
 def estudiantes_perfil(request):
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'estudiantes.json')
-
+    # Mostrar estudiantes desde la tabla tbl_Estudiantes en la BD
     subject = request.GET.get('subject', '').strip()
     normalized_subject = normalize(subject)
 
-    try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
-            estudiantes = json.load(archivo)
-    except FileNotFoundError:
-        estudiantes = []
+    from django.db import connection
 
-    # Filtrar estudiantes que tengan la materia en materias_interes
+    estudiantes = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT e.idEstudiante, e.id_usuario_json, u.nombre, u.apellido, u.correo, u.tipo, e.nivel_academico, e.materias_interes
+            FROM tbl_Estudiantes e
+            JOIN tbl_Usuarios u ON e.idUsuario = u.idUsuario
+            ORDER BY e.idEstudiante
+        """)
+        rows = cursor.fetchall()
+
+    for row in rows:
+        idEst, id_usuario_json, nombre, apellido, correo, tipo_usuario, nivel_academico, materias_raw = row
+        # materias_interes puede ser JSON texto o una cadena; normalizar a lista
+        materias_list = []
+        try:
+            if materias_raw:
+                materias_list = json.loads(materias_raw)
+                # Si viene como una sola cadena con comas, convertir a lista
+                if isinstance(materias_list, str):
+                    materias_list = [m.strip() for m in materias_list.split(',') if m.strip()]
+        except Exception:
+            # Fallback: intentar separar por comas
+            if materias_raw and isinstance(materias_raw, str):
+                materias_list = [m.strip() for m in materias_raw.split(',') if m.strip()]
+
+        estudiante_obj = {
+            'id_usuario': id_usuario_json if id_usuario_json else f"E{idEst:03d}",
+            'nombre': f"{nombre} {apellido}".strip(),
+            'email': correo,
+            'tipo_usuario': tipo_usuario,
+            'nivel_academico': nivel_academico,
+            'materias_interes': materias_list,
+        }
+
+        estudiantes.append(estudiante_obj)
+
+    # Filtrar por materia si se proporcionó
     if normalized_subject:
         estudiantes_filtrados = []
         for estudiante in estudiantes:
@@ -592,8 +781,8 @@ def completar_sesion(request):
 
 
 def historial_sesiones(request):
-    # Ruta al archivo sesiones.json
-    ruta_archivo = os.path.join(settings.BASE_DIR, 'mysite', 'data', 'sesiones.json')
+    # Leer sesiones desde la tabla tbl_Sesiones en la BD
+    from django.db import connection
     
     # Obtener parámetros de filtrado
     materia_filtro = request.GET.get('materia', '').strip().lower()
@@ -601,66 +790,84 @@ def historial_sesiones(request):
     tutor_filtro = request.GET.get('tutor', '').strip().lower()
 
     try:
-        # Leer archivo JSON
-        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
-            sesiones = json.load(archivo)
+        sesiones = []
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.idSesion, s.id_sesion_json, s.idEstudiante, s.idTutor, s.materia, s.fecha_hora, s.estado, s.calificacion_dada, s.comentarios,
+                       e.idEstudiante as est_id
+                FROM tbl_Sesiones s
+                LEFT JOIN tbl_Estudiantes e ON s.idEstudiante = e.idEstudiante
+                ORDER BY s.fecha_hora DESC
+            """)
+            rows = cursor.fetchall()
+
+        sesiones_procesadas = []
+        for row in rows:
+            idSesion, id_sesion_json, idEstudiante, idTutor, materia, fecha_hora, estado, calificacion_dada, comentarios, est_id = row
             
-            # Procesar cada sesión
-            sesiones_procesadas = []
-            for sesion in sesiones:
-                # Aplicar filtros
-                cumple_materia = not materia_filtro or materia_filtro in sesion.get('materia', '').lower()
-                cumple_estudiante = not estudiante_filtro or estudiante_filtro in sesion.get('id_estudiante', '').lower()
-                cumple_tutor = not tutor_filtro or tutor_filtro in sesion.get('id_tutor', '').lower()
-                
-                if cumple_materia and cumple_estudiante and cumple_tutor:
-                    # Formatear fecha
-                    try:
+            # Construir objeto sesión compatible con template
+            sesion = {
+                'idSesion': idSesion,
+                'id_sesion': id_sesion_json,
+                'id_estudiante': f"E{idEstudiante:03d}" if idEstudiante else '',
+                'id_tutor': f"T{idTutor:03d}" if idTutor else '',
+                'materia': materia or '',
+                'fecha_hora': fecha_hora.strftime("%Y-%m-%d %H:%M") if fecha_hora else '',
+                'estado': estado or 'Pendiente',
+                'calificacion_dada': calificacion_dada or 0,
+                'comentarios': comentarios or ''
+            }
+            
+            # Aplicar filtros
+            cumple_materia = not materia_filtro or materia_filtro in (sesion['materia'] or '').lower()
+            cumple_estudiante = not estudiante_filtro or estudiante_filtro in (sesion['id_estudiante'] or '').lower()
+            cumple_tutor = not tutor_filtro or tutor_filtro in (sesion['id_tutor'] or '').lower()
+            
+            if cumple_materia and cumple_estudiante and cumple_tutor:
+                # Formatear fecha
+                try:
+                    if sesion['fecha_hora']:
                         fecha_obj = datetime.strptime(sesion['fecha_hora'], "%Y-%m-%d %H:%M")
                         sesion['fecha_formateada'] = fecha_obj.strftime("%d/%m/%Y %H:%M")
                         sesion['fecha_orden'] = fecha_obj.isoformat()
-                    except (ValueError, KeyError):
-                        sesion['fecha_formateada'] = sesion.get('fecha_hora', 'Fecha no disponible')
-                        sesion['fecha_orden'] = ''
-                    
-                    # Calcular estrellas
-                    if sesion.get('estado') == 'Completada' and sesion.get('calificacion_dada', 0) > 0:
-                        sesion['estrellas'] = '★' * int(sesion['calificacion_dada'])
                     else:
-                        sesion['estrellas'] = ''
-                    
-                    sesiones_procesadas.append(sesion)
-            
-            # Ordenar por fecha (más reciente primero)
-            sesiones_procesadas.sort(key=lambda x: x.get('fecha_orden', ''), reverse=True)
-            
-            # Calcular estadísticas
-            sesiones_completadas = [s for s in sesiones_procesadas if s.get('estado') == 'Completada']
-            promedio = sum(s.get('calificacion_dada', 0) for s in sesiones_completadas) / len(sesiones_completadas) if sesiones_completadas else 0
-            
-            return render(request, 'historial_sesiones.html', {
-                'sesiones': sesiones_procesadas,
-                'total_sesiones': len(sesiones_procesadas),
-                'sesiones_completadas': len(sesiones_completadas),
-                'promedio_calificaciones': round(promedio, 1),
-                'filtros': {
-                    'materia': materia_filtro,
-                    'estudiante': estudiante_filtro,
-                    'tutor': tutor_filtro
-                }
-            })
-    
-    except FileNotFoundError:
+                        sesion['fecha_formateada'] = 'Fecha no disponible'
+                        sesion['fecha_orden'] = ''
+                except (ValueError, KeyError):
+                    sesion['fecha_formateada'] = sesion['fecha_hora'] or 'Fecha no disponible'
+                    sesion['fecha_orden'] = ''
+                
+                # Calcular estrellas
+                if sesion['estado'] == 'Completada' and sesion['calificacion_dada'] > 0:
+                    sesion['estrellas'] = '★' * int(sesion['calificacion_dada'])
+                else:
+                    sesion['estrellas'] = ''
+                
+                sesiones_procesadas.append(sesion)
+        
+        # Ordenar por fecha (más reciente primero)
+        sesiones_procesadas.sort(key=lambda x: x.get('fecha_orden', ''), reverse=True)
+        
+        # Calcular estadísticas
+        sesiones_completadas = [s for s in sesiones_procesadas if s['estado'] == 'Completada']
+        promedio = sum(s['calificacion_dada'] for s in sesiones_completadas) / len(sesiones_completadas) if sesiones_completadas else 0
+        
         return render(request, 'historial_sesiones.html', {
-            'error': 'El archivo de sesiones no fue encontrado',
-            'sesiones': [],
-            'total_sesiones': 0,
-            'sesiones_completadas': 0,
-            'promedio_calificaciones': 0
+            'sesiones': sesiones_procesadas,
+            'total_sesiones': len(sesiones_procesadas),
+            'sesiones_completadas': len(sesiones_completadas),
+            'promedio_calificaciones': round(promedio, 1),
+            'filtros': {
+                'materia': materia_filtro,
+                'estudiante': estudiante_filtro,
+                'tutor': tutor_filtro
+            }
         })
-    except json.JSONDecodeError:
+
+    except Exception as e:
+        print(f"Error al leer sesiones: {e}")
         return render(request, 'historial_sesiones.html', {
-            'error': 'Error al leer el archivo de sesiones',
+            'error': 'Error al leer las sesiones de la base de datos',
             'sesiones': [],
             'total_sesiones': 0,
             'sesiones_completadas': 0,
@@ -678,39 +885,46 @@ def completar_sesion(request):
 
         # 2. Validar los datos recibidos
         if not id_sesion or not calificacion_str:
-            # Puedes manejar este error de forma más elegante si lo deseas
-            return redirect('historial') # Redirige si faltan datos
+            return redirect('historial_sesiones')
 
         calificacion = int(calificacion_str)
         if not (1 <= calificacion <= 5):
-            return redirect('historial') # Redirige si la calificación es inválida
+            return redirect('historial_sesiones')
 
-        # 3. Leer y actualizar el archivo JSON
-        # Usamos la misma ruta absoluta para asegurar que encontramos el archivo
-        directorio_base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        ruta_archivo = os.path.join(directorio_base, 'mysite', 'data', 'sesiones.json')
-
-        with open(ruta_archivo, 'r+', encoding='utf-8') as archivo:
-            sesiones = json.load(archivo)
-            sesion_encontrada = False
-            for sesion in sesiones:
-                if sesion.get('id_sesion') == id_sesion and sesion.get('estado') == 'Confirmada':
-                    sesion['estado'] = 'Completada'
-                    sesion['calificacion_dada'] = calificacion
-                    sesion_encontrada = True
-                    break
-
-            if sesion_encontrada:
-                # Volvemos al inicio del archivo para sobrescribirlo
-                archivo.seek(0)
-                json.dump(sesiones, archivo, indent=4, ensure_ascii=False)
-                archivo.truncate() # Cortamos el archivo para evitar datos antiguos
+        # 3. Actualizar la sesión en tbl_Sesiones
+        from django.db import connection
+        
+        with connection.cursor() as cursor:
+            # Buscar sesión por id_sesion_json
+            cursor.execute(
+                "SELECT idSesion, estado FROM tbl_Sesiones WHERE id_sesion_json = %s",
+                [id_sesion]
+            )
+            result = cursor.fetchone()
+            
+            if not result:
+                messages.error(request, "Sesión no encontrada.")
+                return redirect('historial_sesiones')
+            
+            idSesion, estado = result
+            
+            # Solo actualizar si está "Confirmada"
+            if estado == 'Confirmada':
+                cursor.execute(
+                    "UPDATE tbl_Sesiones SET estado = %s, calificacion_dada = %s WHERE idSesion = %s",
+                    ['Completada', calificacion, idSesion]
+                )
+                connection.commit()
+                messages.success(request, f"Sesión marcada como completada con calificación {calificacion}.")
+            else:
+                messages.warning(request, f"La sesión no puede ser completada (estado actual: {estado}).")
 
         # 4. Redirigir al usuario
         return redirect('historial_sesiones')
 
-    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
-        print(f"Error al procesar la sesión: {e}")
+    except (ValueError, Exception) as e:
+        print(f"Error al completar la sesión: {e}")
+        messages.error(request, "Error al procesar la sesión.")
         return redirect('historial_sesiones')
 
 
