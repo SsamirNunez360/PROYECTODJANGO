@@ -355,6 +355,44 @@ class PlataformaTutorias:
     Clase principal que orquesta todas las operaciones y estructuras de datos.
     Modificada para usar un único archivo datos.json.
     """
+from django.contrib.auth import authenticate # Ya importado en tu código
+# ...
+
+class PlataformaTutorias:
+    # ...
+    
+    def iniciar_sesion(self, email, password):
+        """
+        Usa el framework de autenticación de Django para verificar las credenciales.
+        Asume que los usuarios (estudiantes/tutores) están mapeados a un modelo de Usuario de Django.
+        """
+        # Intenta autenticar. Django se encarga del hashing de la contraseña
+        user = authenticate(username=email, password=password) 
+
+        if user is not None:
+            # 1. Autenticación exitosa.
+            # 2. Determinar si es 'estudiante' o 'tutor' (basado en el campo 'tipo' de la BD)
+            
+            # Nota: Asumes que el campo 'tipo' existe en el modelo de usuario de Django
+            if hasattr(user, 'tipo'):
+                tipo = user.tipo
+            elif hasattr(user, 'is_tutor') and user.is_tutor:
+                tipo = "tutor"
+            else:
+                tipo = "estudiante" # Tipo por defecto o genérico
+            
+            # Buscar el objeto de la clase Estudiante/Tutor en tus diccionarios
+            if tipo == "tutor" and user.id in self.diccionario_tutores:
+                 return ResultadoLogin("tutor", self.diccionario_tutores[user.id])
+            elif user.id in self.diccionario_estudiantes:
+                 return ResultadoLogin("estudiante", self.diccionario_estudiantes[user.id])
+            
+            # Si el usuario es genérico de Django pero no está en tus estructuras de datos
+            return ResultadoLogin(tipo, user)
+        
+        # Autenticación fallida
+        return None
+
     def __init__(self):
         self.diccionario_estudiantes = {} 
         self.diccionario_tutores = {}     
@@ -613,8 +651,32 @@ class PlataformaTutorias:
             return False
 
     def iniciar_sesion(self, email, password):
-        usuario = authenticate(username=email, password=password)
-        return usuario
+        """
+        Usa el framework de autenticación de Django para verificar las credenciales
+        directamente desde la base de datos MariaDB.
+        """
+        # Importar aquí para evitar circular imports
+        from usuarios.models import UsuarioPersonalizado
+        
+        try:
+            # Buscar el usuario en la base de datos por email
+            usuario = UsuarioPersonalizado.objects.get(email=email)
+            
+            # Verificar la contraseña (Django usa hashing)
+            if usuario.check_password(password):
+                # Autenticación exitosa
+                tipo_usuario = usuario.tipo.lower() if usuario.tipo else "estudiante"
+                return ResultadoLogin(tipo_usuario, usuario)
+            else:
+                # Contraseña incorrecta
+                return None
+        except UsuarioPersonalizado.DoesNotExist:
+            # Usuario no encontrado
+            return None
+        except Exception as e:
+            print(f"Error al iniciar sesión: {e}")
+            return None
+
 
 
     def eliminar_estudiante(self, id_estudiante):
@@ -891,3 +953,19 @@ class PlataformaTutorias:
         tutores_ordenados = self.arbol_tutores.obtener_todos_los_tutores()
         for tut in tutores_ordenados:
             print(tut)
+
+
+class ResultadoLogin:
+    """
+    Clase simple para empaquetar el resultado del inicio de sesión.
+    Contiene el tipo de usuario y el objeto completo del usuario.
+    """
+    def __init__(self, tipo, usuario_obj):
+        self.tipo = tipo          # Ej: "estudiante" o "tutor"
+        self.usuario = usuario_obj # El objeto Estudiante o Tutor
+
+    def __str__(self):
+        return f"Login Exitoso: Tipo={self.tipo}, ID={self.usuario.id_usuario}"
+
+# NOTA: Para que esto funcione, la función iniciar_sesion debe ser corregida 
+# para usar las correcciones de BD/JSON.

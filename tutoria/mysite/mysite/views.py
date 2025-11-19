@@ -42,19 +42,32 @@ def login(request):
 
 def iniciar(request):
     if request.method == "POST":
-        email = request.POST['email']
-        password = request.POST['password']
-        usuario = authenticate(request, username=email, password=password)
-        
-        if usuario is not None:
-            login(request, usuario)
-            request.session['user_type'] = usuario.tipo  # <-- acceso correcto
-            return redirect('home')  # O tu vista deseada
-        else:
-            messages.error(request, "Credenciales incorrectas")
-            return redirect('login')
+        email = request.POST.get("email")
+        password = request.POST.get("password")
 
-    return render(request, 'login.html')
+        plataforma = PlataformaTutorias()
+        resultado = plataforma.iniciar_sesion(email, password)
+
+        # Si no coincide o no existe
+        if resultado is None:
+            messages.error(request, "Credenciales incorrectas")
+            return render(request, "login.html")
+
+        # Guardar datos del usuario en sesión
+        request.session["user_email"] = resultado.usuario.email
+        request.session["user_id"] = str(resultado.usuario.idUsuario)
+        request.session["user_type"] = resultado.tipo
+        request.session["user_name"] = resultado.usuario.nombre
+
+        # Redirigir según el tipo
+        if resultado.tipo == "tutor":
+            return redirect("tutores_perfil")
+        else:  # "estudiante"
+            return redirect("estudiantes_perfil")
+
+    # GET → mostrar login
+    return render(request, "login.html")
+
 
 
 def registrar_estudiante(request):
@@ -438,32 +451,7 @@ def estudiantes_perfil(request):
 
 
 
-def iniciar(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        
-        plataforma = PlataformaTutorias()
-        resultado = plataforma.iniciar_sesion(email, password)
-        
-        if not resultado:
-            messages.error(request, 'Credenciales incorrectas')
-            return render(request, 'login.html')
-        
-        # Guardar en sesión según el tipo de usuario
-        request.session['user_type'] = resultado.tipo
-        request.session['user_email'] = email
-        
-        if resultado.tipo == 'estudiante':
-            request.session['user_id'] = resultado.objeto.id_usuario
-            return redirect('dashboard_estudiante')
-        elif resultado.tipo == 'tutor':
-            request.session['user_id'] = resultado.objeto.id_usuario
-            return redirect('dashboard_tutor')
-        else:
-            return redirect('home')
-    
-    return render(request, 'login.html')
+  
 
 
 def registrar(request):
