@@ -372,8 +372,6 @@ class PlataformaTutorias:
         self._next_tutor_id = 1
         self.siguiente_id_sesion = 1
 
-        os.makedirs("data", exist_ok=True)
-
         self._cargar_datos() 
 
     def _cargar_datos(self):
@@ -613,9 +611,22 @@ class PlataformaTutorias:
             return False
 
     def iniciar_sesion(self, email, password):
-        usuario = authenticate(username=email, password=password)
-        return usuario
+            """
+            Inicia sesión utilizando la tabla tbl_Usuarios de la base de datos MySQL,
+            usando el sistema de autenticación de Django.
+            """
+            # 1. Autenticar usando el sistema Auth de Django
+            # Asume que el campo 'email' en la tabla tbl_Usuarios actúa como el 'username'
+            # o que tienes un backend de autenticación que usa el email.
+            user = authenticate(username=email, password=password)
 
+            if user is not None:
+                # El usuario fue encontrado y la contraseña es correcta.
+                # Aquí podrías devolver el objeto Usuario de Django
+                return user 
+            else:
+                # Autenticación fallida (usuario no encontrado o contraseña incorrecta)
+                return None
 
     def eliminar_estudiante(self, id_estudiante):
         """
@@ -881,6 +892,103 @@ class PlataformaTutorias:
         print("\n--- Listado de Estudiantes ---")
         for est in self.diccionario_estudiantes.values():
             print(est)
+
+    def registrar_usuario_bd(self, correo, contrasena, nombre, apellido, tipo='Estudiante'):
+        """
+        Registra un nuevo usuario directamente en tbl_Usuarios de la base de datos
+        usando el modelo Django UsuarioPersonalizado.
+        
+        Args:
+            correo (str): Correo electrónico (único).
+            contrasena (str): Contraseña en texto plano (será hasheada por Django).
+            nombre (str): Nombre del usuario.
+            apellido (str): Apellido del usuario.
+            tipo (str): Tipo de usuario ('Estudiante', 'Tutor', 'Admin'). Por defecto 'Estudiante'.
+        
+        Returns:
+            tuple: (bool, dict) donde:
+                - bool: True si el registro fue exitoso, False en caso contrario.
+                - dict: Información del usuario registrado o mensaje de error.
+        
+        Ejemplo:
+            >>> exito, resultado = plataforma.registrar_usuario_bd(
+            ...     correo='juan@example.com',
+            ...     contrasena='SeguraPass123!',
+            ...     nombre='Juan',
+            ...     apellido='Pérez',
+            ...     tipo='Estudiante'
+            ... )
+        """
+        from usuarios.models import UsuarioPersonalizado
+        import re
+        
+        try:
+            # 1. Validar correo
+            patron_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(patron_email, correo):
+                return False, {'error': 'El correo electrónico no tiene un formato válido.'}
+            
+            # Verificar si el correo ya existe
+            if UsuarioPersonalizado.objects.filter(correo=correo).exists():
+                return False, {'error': 'El correo electrónico ya está registrado en el sistema.'}
+            
+            # 2. Validar nombre
+            nombre = nombre.strip()
+            if not nombre or len(nombre) < 2:
+                return False, {'error': 'El nombre debe tener al menos 2 caracteres.'}
+            if len(nombre) > 100:
+                return False, {'error': 'El nombre no puede exceder 100 caracteres.'}
+            patron_nombre = r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$'
+            if not re.match(patron_nombre, nombre):
+                return False, {'error': 'El nombre contiene caracteres inválidos.'}
+            
+            # 3. Validar apellido
+            apellido = apellido.strip()
+            if not apellido or len(apellido) < 2:
+                return False, {'error': 'El apellido debe tener al menos 2 caracteres.'}
+            if len(apellido) > 100:
+                return False, {'error': 'El apellido no puede exceder 100 caracteres.'}
+            patron_apellido = r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$'
+            if not re.match(patron_apellido, apellido):
+                return False, {'error': 'El apellido contiene caracteres inválidos.'}
+            
+            # 4. Validar contraseña
+            if not contrasena or len(contrasena) < 8:
+                return False, {'error': 'La contraseña debe tener al menos 8 caracteres.'}
+            if len(contrasena) > 128:
+                return False, {'error': 'La contraseña no puede exceder 128 caracteres.'}
+            
+            # 5. Validar tipo de usuario
+            tipos_permitidos = ['Estudiante', 'Tutor', 'Admin', 'Administrador']
+            if tipo not in tipos_permitidos:
+                return False, {'error': f'El tipo de usuario debe ser uno de: {", ".join(tipos_permitidos)}'}
+            
+            # 6. Crear el usuario usando el manager personalizado
+            usuario = UsuarioPersonalizado.objects.create_user(
+                correo=correo,
+                password=contrasena,
+                nombre=nombre,
+                apellido=apellido,
+                tipo=tipo
+            )
+            
+            # 7. Retornar información del usuario registrado
+            resultado = {
+                'idUsuario': usuario.idUsuario,
+                'correo': usuario.correo,
+                'nombre': usuario.nombre,
+                'apellido': usuario.apellido,
+                'tipo': usuario.tipo,
+                'is_active': usuario.is_active,
+                'date_joined': str(usuario.date_joined_db),
+            }
+            
+            print(f"✓ Usuario '{usuario.correo}' registrado exitosamente en la BD con ID {usuario.idUsuario}")
+            return True, resultado
+        
+        except Exception as e:
+            print(f"✗ Error al registrar usuario: {str(e)}")
+            return False, {'error': f'Error al registrar usuario: {str(e)}'}
 
     def listar_tutores(self):
         """Muestra un listado de todos los tutores registrados."""

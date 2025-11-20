@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro de Usuario</title>
+
+  <!-- Bootstrap (opcional, pero recomendado) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#2563eb;
+      --primary-light:#3b82f6;
+      --gray-light:#f9fafb;
+      --text-dark:#1f2937;
+      --muted:#6b7280;
+    }
+
+    body{
+      background: var(--gray-light);
+      font-family: 'Nunito', sans-serif;
+      margin:0;
+      padding:20px;
+    }
+
+    h2{
+      text-align:center;
+      font-weight:700;
+      color:var(--text-dark);
+      margin-bottom:20px;
+    }
+
+    .form-box{
+      max-width:600px;
+      margin:auto;
+      background:#fff;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    label{
+      font-weight:600;
+      margin-top:15px;
+      color:var(--text-dark);
+    }
+
+    input, select{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      font-size:0.95rem;
+    }
+
+    input:focus, select:focus{
+      outline:none;
+      border-color:var(--primary);
+      box-shadow:0 0 0 0.1rem rgba(37,99,235,0.25);
+    }
+
+    .btn-submit{
+      margin-top:22px;
+      padding:12px;
+      width:100%;
+      background:linear-gradient(90deg, var(--primary), var(--primary-light));
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font-weight:700;
+      font-size:1rem;
+      cursor:pointer;
+      transition:0.2s ease-in-out;
+    }
+
+    .btn-submit:hover{
+      opacity:0.9;
+      transform:translateY(-1px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Crear cuenta</h2>
+
+  <form method="post" action="/registrar/" class="form-box">
+    {% csrf_token %}
+
+    <label for="nombre">Nombre *</label>
+    <input id="nombre" name="nombre" type="text" required minlength="2" maxlength="100">
+
+    <label for="apellido">Apellido *</label>
+    <input id="apellido" name="apellido" type="text" required minlength="2" maxlength="100">
+
+    <label for="correo">Correo *</label>
+    <input id="correo" name="correo" type="email" required maxlength="100">
+
+    <label for="tipo">Tipo *</label>
+    <select id="tipo" name="tipo" required>
+      <option value="">-- Selecciona --</option>
+      <option value="Estudiante">Estudiante</option>
+      <option value="Tutor">Tutor</option>
+      <option value="Admin">Administrador</option>
+    </select>
+
+    <label for="contrasena">Contraseña *</label>
+    <input id="contrasena" name="contrasena" type="password" required minlength="8">
+
+    <label for="contrasena_confirm">Confirmar contraseña *</label>
+    <input id="contrasena_confirm" name="contrasena_confirm" type="password" required minlength="8">
+
+    <button type="submit" class="btn-submit">Registrarse</button>
+  </form>
+
+</body>
+</html>

@@ -8,6 +8,10 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('iniciar', views.iniciar, name='iniciar'),
     path('login/', views.login, name='login'),
+    path('registrar/', views.registrar, name='registrar'),
+    # Alias en español para accesibilidad: /registro/ -> misma vista
+    path('registro/', views.registrar, name='registro'),
+    
     path('home/', views.home, name='home'),
     path('tutores_perfil/', views.tutores_perfil, name='tutores_perfil'),
     path('estudiantes_perfil/', views.estudiantes_perfil, name='estudiantes_perfil'),

@@ -644,20 +644,54 @@ def estudiantes_perfil(request):
 
 
 def registrar(request):
+    """
+    Vista para registrar un nuevo usuario en tbl_Usuarios.
+    GET: muestra el formulario de registro.
+    POST: procesa el registro del usuario.
+    """
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        nombre = request.POST.get('nombre')
-        apellido = request.POST.get('apellido')
+        correo = request.POST.get('correo', '').strip()
+        contrasena = request.POST.get('contrasena', '').strip()
+        contrasena_confirm = request.POST.get('contrasena_confirm', '').strip()
+        nombre = request.POST.get('nombre', '').strip()
+        apellido = request.POST.get('apellido', '').strip()
+        tipo = request.POST.get('tipo', 'Estudiante').strip()
         
+        # Validar que las contraseñas coincidan
+        if contrasena != contrasena_confirm:
+            messages.error(request, "Las contraseñas no coinciden.")
+            return render(request, 'registro.html', {
+                'correo': correo,
+                'nombre': nombre,
+                'apellido': apellido,
+                'tipo': tipo,
+            })
+        
+        # Registrar usuario en la BD usando PlataformaTutorias
         plataforma = PlataformaTutorias()
-        if plataforma.registrar_usuario_basico(email, password, nombre, apellido):
-            messages.success(request, 'Registro exitoso')
-            return redirect('login')
+        exito, resultado = plataforma.registrar_usuario_bd(
+            correo=correo,
+            contrasena=contrasena,
+            nombre=nombre,
+            apellido=apellido,
+            tipo=tipo
+        )
+        
+        if exito:
+            messages.success(request, f"¡Usuario registrado exitosamente! Tu correo es: {resultado['correo']}")
+            return redirect('login')  # Redirigir al login
         else:
-            messages.error(request, 'El email ya está registrado')
+            messages.error(request, f"Error en el registro: {resultado['error']}")
+            return render(request, 'registro.html', {
+                'correo': correo,
+                'nombre': nombre,
+                'apellido': apellido,
+                'tipo': tipo,
+            })
     
-    return render(request, 'registro.html')
+    # GET: mostrar formulario
+    tipos_usuario = ['Estudiante', 'Tutor', 'Admin']
+    return render(request, 'registro.html', {'tipos_usuario': tipos_usuario})
     
 
 def menu_principal(request):
