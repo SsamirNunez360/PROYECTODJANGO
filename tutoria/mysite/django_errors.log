@@ -3240,3 +3240,15 @@ Traceback (most recent call last):
   File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
     raise errorclass(errno, errval)
 django.db.utils.OperationalError: (1054, "Unknown column 'e.id_usuario_json' in 'SELECT'")
+Internal Server Error: /iniciar
+Traceback (most recent call last):
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/venv/lib64/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/PROYECTODJANGO/tutoria/mysite/mysite/views.py", line 57, in iniciar
+    request.session["user_email"] = resultado.usuario.email
+                                    ^^^^^^^^^^^^^^^^^
+AttributeError: 'UsuarioPersonalizado' object has no attribute 'usuario'. Did you mean: 'idUsuario'?

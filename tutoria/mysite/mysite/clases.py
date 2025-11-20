@@ -611,22 +611,38 @@ class PlataformaTutorias:
             return False
 
     def iniciar_sesion(self, email, password):
-            """
-            Inicia sesión utilizando la tabla tbl_Usuarios de la base de datos MySQL,
-            usando el sistema de autenticación de Django.
-            """
-            # 1. Autenticar usando el sistema Auth de Django
-            # Asume que el campo 'email' en la tabla tbl_Usuarios actúa como el 'username'
-            # o que tienes un backend de autenticación que usa el email.
-            user = authenticate(username=email, password=password)
-
-            if user is not None:
-                # El usuario fue encontrado y la contraseña es correcta.
-                # Aquí podrías devolver el objeto Usuario de Django
-                return user 
+        """
+        Inicia sesión utilizando la tabla tbl_Usuarios de la base de datos.
+        Autentica el usuario verificando correo y contraseña hasheada.
+        
+        Args:
+            email (str): Correo electrónico del usuario
+            password (str): Contraseña en texto plano
+            
+        Returns:
+            UsuarioPersonalizado o None si las credenciales son inválidas
+        """
+        from usuarios.models import UsuarioPersonalizado
+        from django.contrib.auth.hashers import check_password
+        
+        try:
+            # Buscar usuario por correo
+            usuario = UsuarioPersonalizado.objects.get(correo=email)
+            
+            # Verificar contraseña
+            if check_password(password, usuario.password):
+                print(f"✓ Sesión iniciada para: {usuario.correo}")
+                return usuario
             else:
-                # Autenticación fallida (usuario no encontrado o contraseña incorrecta)
+                print(f"✗ Contraseña incorrecta para: {email}")
                 return None
+                
+        except UsuarioPersonalizado.DoesNotExist:
+            print(f"✗ Usuario no encontrado: {email}")
+            return None
+        except Exception as e:
+            print(f"✗ Error al iniciar sesión: {str(e)}")
+            return None
 
     def eliminar_estudiante(self, id_estudiante):
         """
@@ -896,11 +912,11 @@ class PlataformaTutorias:
     def registrar_usuario_bd(self, correo, contrasena, nombre, apellido, tipo='Estudiante'):
         """
         Registra un nuevo usuario directamente en tbl_Usuarios de la base de datos
-        usando el modelo Django UsuarioPersonalizado.
+        usando SQL raw query para evitar conflictos de Django ORM.
         
         Args:
             correo (str): Correo electrónico (único).
-            contrasena (str): Contraseña en texto plano (será hasheada por Django).
+            contrasena (str): Contraseña en texto plano (será hasheada).
             nombre (str): Nombre del usuario.
             apellido (str): Apellido del usuario.
             tipo (str): Tipo de usuario ('Estudiante', 'Tutor', 'Admin'). Por defecto 'Estudiante'.
@@ -909,28 +925,16 @@ class PlataformaTutorias:
             tuple: (bool, dict) donde:
                 - bool: True si el registro fue exitoso, False en caso contrario.
                 - dict: Información del usuario registrado o mensaje de error.
-        
-        Ejemplo:
-            >>> exito, resultado = plataforma.registrar_usuario_bd(
-            ...     correo='juan@example.com',
-            ...     contrasena='SeguraPass123!',
-            ...     nombre='Juan',
-            ...     apellido='Pérez',
-            ...     tipo='Estudiante'
-            ... )
         """
-        from usuarios.models import UsuarioPersonalizado
         import re
+        from django.contrib.auth.hashers import make_password
+        from django.db import connection
         
         try:
             # 1. Validar correo
             patron_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
             if not re.match(patron_email, correo):
                 return False, {'error': 'El correo electrónico no tiene un formato válido.'}
-            
-            # Verificar si el correo ya existe
-            if UsuarioPersonalizado.objects.filter(correo=correo).exists():
-                return False, {'error': 'El correo electrónico ya está registrado en el sistema.'}
             
             # 2. Validar nombre
             nombre = nombre.strip()
@@ -963,27 +967,37 @@ class PlataformaTutorias:
             if tipo not in tipos_permitidos:
                 return False, {'error': f'El tipo de usuario debe ser uno de: {", ".join(tipos_permitidos)}'}
             
-            # 6. Crear el usuario usando el manager personalizado
-            usuario = UsuarioPersonalizado.objects.create_user(
-                correo=correo,
-                password=contrasena,
-                nombre=nombre,
-                apellido=apellido,
-                tipo=tipo
-            )
+            # 6. Hashear contraseña
+            contrasena_hasheada = make_password(contrasena)
             
-            # 7. Retornar información del usuario registrado
+            # 7. Verificar que el correo no exista usando SQL raw
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM tbl_Usuarios WHERE correo = %s", [correo])
+                if cursor.fetchone()[0] > 0:
+                    return False, {'error': 'El correo electrónico ya está registrado en el sistema.'}
+                
+                # 8. Insertar nuevo usuario usando SQL raw
+                cursor.execute(
+                    """INSERT INTO tbl_Usuarios (correo, password, nombre, apellido, tipo, is_active, is_staff, is_superuser)
+                    VALUES (%s, %s, %s, %s, %s, '1', '0', '0')""",
+                    [correo, contrasena_hasheada, nombre, apellido, tipo]
+                )
+                
+                # 9. Obtener el ID del usuario recién creado
+                cursor.execute("SELECT idUsuario FROM tbl_Usuarios WHERE correo = %s", [correo])
+                id_usuario = cursor.fetchone()[0]
+            
+            # 10. Retornar información del usuario registrado
             resultado = {
-                'idUsuario': usuario.idUsuario,
-                'correo': usuario.correo,
-                'nombre': usuario.nombre,
-                'apellido': usuario.apellido,
-                'tipo': usuario.tipo,
-                'is_active': usuario.is_active,
-                'date_joined': str(usuario.date_joined_db),
+                'idUsuario': id_usuario,
+                'correo': correo,
+                'nombre': nombre,
+                'apellido': apellido,
+                'tipo': tipo,
+                'is_active': '1',
             }
             
-            print(f"✓ Usuario '{usuario.correo}' registrado exitosamente en la BD con ID {usuario.idUsuario}")
+            print(f"✓ Usuario '{correo}' registrado exitosamente en la BD con ID {id_usuario}")
             return True, resultado
         
         except Exception as e:

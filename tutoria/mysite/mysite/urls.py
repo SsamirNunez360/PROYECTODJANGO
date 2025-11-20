@@ -9,7 +9,6 @@ urlpatterns = [
     path('iniciar', views.iniciar, name='iniciar'),
     path('login/', views.login, name='login'),
     path('registrar/', views.registrar, name='registrar'),
-    # Alias en español para accesibilidad: /registro/ -> misma vista
     path('registro/', views.registrar, name='registro'),
     
     path('home/', views.home, name='home'),

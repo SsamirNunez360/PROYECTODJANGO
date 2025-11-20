@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 
 class MiUserManager(BaseUserManager):
@@ -17,13 +18,12 @@ class MiUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff_db', '0')
         extra_fields.setdefault('is_superuser_db', '0')
         extra_fields.setdefault('is_active_db', '1')
-        # Puedes añadir valores iniciales para 'date_joined_db' si lo necesitas
 
         # Crea el usuario usando los campos de la BD
         user = self.model(correo=correo, **extra_fields)
         
         if password:
-            user.set_password(password) # Usa set_password para hashear
+            user.password = make_password(password)  # Hashear contraseña
             
         user.save(using=self._db)
         return user
@@ -43,24 +43,21 @@ class MiUserManager(BaseUserManager):
         return self.create_user(correo, password, **extra_fields)
 
 
-class UsuarioPersonalizado(AbstractBaseUser, PermissionsMixin):
+class UsuarioPersonalizado(models.Model):
     # Campos mapeados EXACTAMENTE a tu tabla tbl_Usuarios
     idUsuario = models.AutoField(primary_key=True, db_column='idUsuario')
     correo = models.EmailField(unique=True, db_column='correo', max_length=100)
-    password = models.CharField(max_length=128, db_column='password') # Se usará para almacenar el hash
+    password = models.CharField(max_length=128, db_column='password')
     nombre = models.CharField(max_length=100, db_column='nombre')
     apellido = models.CharField(max_length=100, db_column='apellido')
     tipo = models.CharField(max_length=100, db_column='tipo')
+    is_superuser = models.CharField(max_length=100, db_column='is_superuser', default='0')
+    is_staff = models.CharField(max_length=100, db_column='is_staff', default='0')
+    is_active = models.CharField(max_length=100, db_column='is_active', default='1')
+    last_login = models.CharField(max_length=100, db_column='last_login', null=True, blank=True)
+    date_joined = models.DateTimeField(db_column='date_joined', null=True, blank=True) 
     
-    # Campos de Django mapeados a VARCHAR/CHAR de la BD con el sufijo '_db'
-    last_login_db = models.CharField(max_length=100, db_column='last_login', null=True, blank=True)
-    is_superuser_db = models.CharField(max_length=100, db_column='is_superuser', default='0')
-    is_staff_db = models.CharField(max_length=100, db_column='is_staff', default='0')
-    is_active_db = models.CharField(max_length=100, db_column='is_active', default='1')
-    date_joined_db = models.CharField(max_length=100, db_column='date_joined', default=timezone.now) 
-    
-    # ----------------------------------------------------
-    # Configuración de autenticación
+    # --- Configuración de autenticación (NO usamos AbstractBaseUser para evitar conflictos)
     USERNAME_FIELD = 'correo'
     REQUIRED_FIELDS = ['nombre', 'apellido', 'tipo']
     
@@ -68,7 +65,7 @@ class UsuarioPersonalizado(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'tbl_Usuarios'
-        managed = False  # MUY IMPORTANTE: Indica que la tabla ya existe
+        managed = False
         
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.correo})"
@@ -77,49 +74,39 @@ class UsuarioPersonalizado(AbstractBaseUser, PermissionsMixin):
     # Mapeo de Propiedades: Convierte los CharField de la BD a Booleanos para Django
     # ----------------------------------------------------
     @property
-    def is_staff(self):
-        """Requerido por PermissionsMixin. Lee el campo de la BD."""
-        return self.is_staff_db in ('1', 'True')
+    def is_staff_bool(self):
+        """Convierte el campo is_staff a booleano."""
+        return self.is_staff in ('1', 'True')
 
     @property
-    def is_active(self):
-        """Requerido por AbstractBaseUser. Lee el campo de la BD."""
-        return self.is_active_db in ('1', 'True')
+    def is_active_bool(self):
+        """Convierte el campo is_active a booleano."""
+        return self.is_active in ('1', 'True')
         
     @property
-    def is_superuser(self):
-        """Requerido por PermissionsMixin. Lee el campo de la BD."""
-        return self.is_superuser_db in ('1', 'True')
+    def is_superuser_bool(self):
+        """Convierte el campo is_superuser a booleano."""
+        return self.is_superuser in ('1', 'True')
         
     # ----------------------------------------------------
-    # Lógica de Migración de Contraseña
+    # Lógica de Verificación de Contraseña
     # ----------------------------------------------------
     def check_password(self, raw_password):
         """
-        Verifica la contraseña. Si no está hasheada, usa el texto plano 
-        de la BD y la migra automáticamente.
+        Verifica la contraseña usando el sistema de hashing de Django.
         """
-        # 1. Intenta la verificación estándar de Django (para contraseñas hasheadas)
-        verification_passed = super().check_password(raw_password)
-
-        if verification_passed:
-            return True
-        
-        # 2. Si falla el hash, verifica si coincide con el texto plano almacenado
-        #    Esto solo debería ocurrir antes de la primera autenticación post-migración
-        if raw_password == self.password:
-            print(f"⚠️ Migrando contraseña a hash para usuario: {self.correo}...")
-            # 3. Migrar: Hashea la contraseña y la guarda
-            self.set_password(raw_password)
-            self.save(update_fields=['password']) # Solo actualiza la columna password
-            return True
-            
-        return False
+        return check_password(raw_password, self.password)
+    
+    def set_password(self, raw_password):
+        """
+        Hashea y guarda la contraseña.
+        """
+        self.password = make_password(raw_password)
+        self.save(update_fields=['password'])
 
     # ----------------------------------------------------
     # Métodos de Permisos
     # ----------------------------------------------------
-    # Estos ahora usan las propiedades @is_staff/@is_superuser
     def has_perm(self, perm, obj=None):
         return self.is_superuser # Un superusuario tiene todos los permisos
 

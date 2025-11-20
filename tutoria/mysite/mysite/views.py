@@ -46,21 +46,21 @@ def iniciar(request):
         password = request.POST.get("password")
 
         plataforma = PlataformaTutorias()
-        resultado = plataforma.iniciar_sesion(email, password)
+        usuario = plataforma.iniciar_sesion(email, password)
 
         # Si no coincide o no existe
-        if resultado is None:
+        if usuario is None:
             messages.error(request, "Credenciales incorrectas")
             return render(request, "login.html")
 
         # Guardar datos del usuario en sesión
-        request.session["user_email"] = resultado.usuario.email
-        request.session["user_id"] = str(resultado.usuario.idUsuario)
-        request.session["user_type"] = resultado.tipo
-        request.session["user_name"] = resultado.usuario.nombre
+        request.session["user_email"] = usuario.correo
+        request.session["user_id"] = str(usuario.idUsuario)
+        request.session["user_type"] = usuario.tipo
+        request.session["user_name"] = usuario.nombre
 
         # Redirigir a home (página principal después del login)
-        messages.success(request, f"¡Bienvenido {resultado.usuario.nombre}!")
+        messages.success(request, f"¡Bienvenido!")
         return redirect("home")
 
     # GET → mostrar login
